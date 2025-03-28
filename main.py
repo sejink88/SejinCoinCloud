@@ -69,34 +69,44 @@ def add_record(student_index, activity, reward=None, additional_info=None):
 st.markdown(
     """
     <style>
+    /* 배경화면 및 GIF 설정 */
     .stApp {
-        background-image: url("https://images.unsplash.com/photo-1614285260465-616bc589d90d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+        background: url('https://global-assets.benzinga.com/kr/2025/02/16222019/1739712018-Cryptocurrency-Photo-by-SvetlanaParnikov.jpeg') repeat !important;
+        background-size: 150px 150px !important;
     }
 
+    /* 헤더 비트코인 GIF 추가 */
+    .header-img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    /* 텍스트 색상 및 폰트 설정 */
     html, body, [class*="css"] {
         color: #ffffff;
         font-family: 'Orbitron', sans-serif;
     }
 
+    /* 버튼 스타일링 */
     .stButton>button {
-        background-color: #808080 !important;
-        color: #fff;
-        font-weight: bold;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-        font-size: 16px;
-        transition: transform 0.2s ease-in-out;
-        box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
+         background-color: #808080 !important;
+         color: #fff;
+         font-weight: bold;
+         border: none;
+         border-radius: 8px;
+         padding: 10px 20px;
+         font-size: 16px;
+         transition: transform 0.2s ease-in-out;
+         box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
+
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
-
 
 # 헤더 비트코인 GIF 이미지
 st.markdown(
