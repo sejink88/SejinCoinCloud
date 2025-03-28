@@ -96,7 +96,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-)
+
 
 # 헤더 비트코인 GIF 이미지
 st.markdown(
