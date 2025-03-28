@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "sejincoin-project",
+  "private_key_id": "a85544904ca3a2f2b09bfb95a01dfe29f01c7bee",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCtdRVZs+HW7vk4\nEW3KQOh97kW8i0GBnej3L8jDjdjva6z96Wz/KEFaRYYgqGZ9+hygeABa3OuokT8G\n6tVtcJw9a9fY6mlS9fkbZv5Xi5jxUkoD6MqvyTjx23SyrDQbCt6kHSqPyHJs5C85\nBPWFlENOx8Jrs6X8lYcD447TkGx0BHlPNxiDxuIMu5KzRIoULrHlunODI+BOiCkH\nwJpqrojSh5P9fffED0OA3O74fhn/fbKgZ6LeMNlB4xXEO+RHvI+Or8huleFNu+ic\nVYqxUOqIrlhQ9gS7XXgdcF/dJL1jNQ9rerH6ZsMRhZdizJer4Iy4U3YYM7EzK0dp\nZh4dP1XRAgMBAAECggEADec1l+QQNQ8gkLrs5uo++GER2+P5ky8aDj4ZRHtpKP+j\ndRKxtt3+JwMtlg6JcI2Mn9wegyn0BaXmvGI0Szpce5vaSDu5x3mJxwWBW3kIAEfN\nQPT20hI560Dg4LVm08gSQmtIDxBNA6dilZptJ5DTuEvQrJtQsac2lDw4JYMM/lt/\nXvZDTU7BIEy7nx4S1ru00qySkMO/pQe9008BLQ8mqjj3XR0fzjlrwFbcUwnktDEG\naDQ5kRISEx2gbwa5/IjzdyIWLCYIzWFhhqp1TtVUdG174H9u7mZyD02lOr+doiuE\nh7yDd76z3kDFOVd0NDq5IPeEetmHUFqGATam9z4L9QKBgQDwUkrMca8Oc3Zvj+vg\nJusHvj4+zfg4PO/1KFz52talcLUhFAiZsm1mqhhPlbjAeVn+yHB2l09M0aZDzxDk\noxlH0UXa9J0Er2xo/rRYyhiuGr7dRjUQoRhROvIglFRrHycriTB7qgi0JVS5JFFO\nejxclOI6hxzOQzuDMhOVqpM3pwKBgQC4xhD7JPNNuT8ZGyyDSkVkWTkvVJzxeRY8\nZgy18/nSEDXi8pjAl5dWWDmA1aBfg55WQ1g2sQqf01QWl5c8f8xD+7e9tKNJhNBO\nor9c0t3SAY3NgDyFrep78Bq0z9CL4UNROxTKKRRXr0p6oE55BHfriTddE/CfTNTl\ng6gZ7Jq1xwKBgHTL2dRwr957GSVxMfb3kyRpPkExwyA55Xkli8JWrBktpKoV3XQt\nNmQ96KDNKERK9gUQjy/jq8Ou5HpyKUilR8USnTujxKghRbPljerVFZeQIhDSbTnO\nwU3BMynITRrewh+zhh+j7KT4u6tbTjSwzaNFLIm7XrGUFVlWvhPwGapjAoGAJ3z8\n6A9vh+7NE1qBWtWmmtmOpRTaLakJHYNZuBEaFNCuE4BxMMe06hkUwPnmukLwtdLS\nqW2QrbOGRwXCpoVRbD4BeKOAOhgORJ/3cakHCviWC5MaXB9c+3vG2VmIYjyUHGoZ\n+VJqLIsjya002BwiXM4IbPXz+Ld80EggxtmP/sUCgYBWxQxCWGut3BrAqY6zlj+1\n+K8h85B+vAf3+QgVuhzugZze4VrRWM0athdrKneoih3eYxIEl0AyOIKTpePbDUR/\nYxVieGfHeF/JNWuFZ7YMyKjc09cZ8fZNTs7V2VCifsHm8o/ArfWvopnwV3SnFBT3\nPqFK5w8OPHzzIA3qB4ugcg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "sejincointcloud@sejincoin-project.iam.gserviceaccount.com",
+  "client_id": "116830818911850941050",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sejincointcloud%40sejincoin-project.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
