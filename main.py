@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import ast
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import random
 import time
 import gspread
@@ -51,10 +51,12 @@ def save_data(data):
     sheet.update([data.columns.values.tolist()] + data.values.tolist())
     save_data_to_cache(data)  # 캐시에 저장하여 후속 호출에 대비
 
-# 기록을 추가하는 함수
+# 기록을 추가하는 함수 (KST 적용)
 def add_record(student_index, activity, reward=None, additional_info=None):
+    # 대한민국 표준시(KST, UTC+9)를 적용
+    kst = timezone(timedelta(hours=9))
+    timestamp = datetime.now(kst).strftime("%Y-%m-%d %H:%M:%S")
     record_list = ast.literal_eval(data.at[student_index, "기록"])
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     new_record = {
         "timestamp": timestamp,
         "activity": activity,
