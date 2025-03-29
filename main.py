@@ -190,9 +190,7 @@ if user_type == "교사용":
             save_data(data)
             st.success(f"{selected_student}의 비밀번호가 성공적으로 변경되었습니다!")
 
-
         if st.button("⚠️ 세진코인 초기화"):
-            
             data.at[student_index, "세진코인"] = 0
             data.at[student_index, "기록"] = "[]"
             add_record(student_index, "세진코인 초기화", reward=None, additional_info="세진코인 및 기록 초기화")
@@ -203,16 +201,16 @@ if user_type == "교사용":
         st.subheader(f"{selected_student}의 업데이트된 세진코인")
         st.dataframe(updated_student_data)
 
-   
-    student_coins = int(data.at[student_index, "세진코인"])  
-    # ✅ 사이드바에 학생 정보 표시 추가
+    # 사이드바에 학생 정보 표시
+    student_coins = float(data.at[student_index, "세진코인"])
     st.sidebar.markdown("---")
     st.sidebar.subheader("📌 학생 정보")
     st.sidebar.write(f"**이름:** {selected_student}")
-    st.sidebar.write(f"**보유 코인:** {student_coins}개")
+    st.sidebar.write(f"**보유 코인:** {student_coins:.1f}개")
     st.sidebar.markdown("---")
 
-    st.markdown(f"<h2>{selected_student}님의 세진코인은 {student_coins}개입니다.</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2>{selected_student}님의 세진코인은 {student_coins:.1f}개입니다.</h2>", unsafe_allow_html=True)
+
 # --- 🎒 학생용 UI --- 
 elif user_type == "학생용":
     selected_class = st.selectbox("반을 선택하세요:", data["반"].unique())
@@ -220,8 +218,8 @@ elif user_type == "학생용":
     selected_student = st.selectbox("학생을 선택하세요:", filtered_data["학생"].tolist())
     student_index = data[(data["반"] == selected_class) & (data["학생"] == selected_student)].index[0]
 
-    student_coins = int(data.at[student_index, "세진코인"])
-    st.markdown(f"<h2>{selected_student}님의 세진코인은 {student_coins}개입니다.</h2>", unsafe_allow_html=True)
+    student_coins = float(data.at[student_index, "세진코인"])
+    st.markdown(f"<h2>{selected_student}님의 세진코인은 {student_coins:.1f}개입니다.</h2>", unsafe_allow_html=True)
 
     password = st.text_input("비밀번호를 입력하세요:", type="password")
 
@@ -231,54 +229,59 @@ elif user_type == "학생용":
         chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
 
         if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button"):
-            # 4초 대기 후 로또 진행
-            with st.spinner("잠시만 기다려 주세요... 로또 진행 중입니다."):
-                if student_coins < 1:
-                    st.error("세진코인이 부족하여 로또를 진행할 수 없습니다.")
+            # 학생 보유 코인 확인 (소수점 포함)
+            if student_coins < 1:
+                st.error("세진코인이 부족하여 로또를 진행할 수 없습니다.")
+            else:
+                # 10초 카운트다운 추가
+                countdown_placeholder = st.empty()
+                for i in range(10, 0, -1):
+                    countdown_placeholder.markdown(f"**로또 추첨까지 {i}초 남음...**")
+                    time.sleep(1)
+                countdown_placeholder.empty()
+                
+                # 로또 추첨 진행
+                data.at[student_index, "세진코인"] -= 1
+                pool = list(range(1, 21))
+                main_balls = random.sample(pool, 3)
+                bonus_ball = random.choice([n for n in pool if n not in main_balls])
+
+                st.write("**컴퓨터 추첨 결과:**")
+                st.write("메인 볼:", sorted(main_balls))
+                st.write("보너스 볼:", bonus_ball)
+
+                # 당첨 확인 및 보상 제공
+                matches = set(chosen_numbers) & set(main_balls)
+                match_count = len(matches)
+
+                reward = None
+                if match_count == 3:
+                    st.success("🎉 1등 당첨! 상품: 치킨")
+                    reward = "치킨"
+                elif match_count == 2 and list(set(chosen_numbers) - matches)[0] == bonus_ball:
+                    st.success("🎉 2등 당첨! 상품: 햄버거세트")
+                    reward = "햄버거세트"
+                elif match_count == 2:
+                    st.success("🎉 3등 당첨! 상품: 매점이용권")
+                    reward = "매점이용권"
+                elif match_count == 1:
+                    st.success("🎉 4등 당첨! 보상: 0.5코인")
+                    reward = "0.5코인"
+                    data.at[student_index, "세진코인"] += 0.5
                 else:
-                    # 로또 추첨 진행
-                    data.at[student_index, "세진코인"] -= 1
-                    pool = list(range(1, 21))
-                    main_balls = random.sample(pool, 3)
-                    bonus_ball = random.choice([n for n in pool if n not in main_balls])
+                    st.error("😢 아쉽게도 당첨되지 않았습니다.")
 
-                    st.write("**컴퓨터 추첨 결과:**")
-                    st.write("메인 볼:", sorted(main_balls))
-                    st.write("보너스 볼:", bonus_ball)
-
-                    # 당첨 확인 및 보상 제공
-                    matches = set(chosen_numbers) & set(main_balls)
-                    match_count = len(matches)
-
-                    reward = None
-                    if match_count == 3:
-                        st.success("🎉 1등 당첨! 상품: 치킨")
-                        reward = "치킨"
-                    elif match_count == 2 and list(set(chosen_numbers) - matches)[0] == bonus_ball:
-                        st.success("🎉 2등 당첨! 상품: 햄버거세트")
-                        reward = "햄버거세트"
-                    elif match_count == 2:
-                        st.success("🎉 3등 당첨! 상품: 매점이용권")
-                        reward = "매점이용권"
-                    elif match_count == 1:
-                        st.success("🎉 4등 당첨! 보상: 0.5코인")
-                        reward = "0.5코인"
-                        data.at[student_index, "세진코인"] += 0.5
-                    else:
-                        st.error("😢 아쉽게도 당첨되지 않았습니다.")
-
-                    add_record(student_index, "로또", reward, f"당첨번호: {main_balls}")
-                    save_data(data)
-                    st.success(f"당첨 결과: {reward}!")
+                add_record(student_index, "로또", reward, f"당첨번호: {main_balls}")
+                save_data(data)
+                st.success(f"당첨 결과: {reward}!")
                     
-    student_coins = int(data.at[student_index, "세진코인"])  
-    # ✅ 사이드바에 학생 정보 표시 추가
+    # 사이드바에 학생 정보 표시
+    student_coins = float(data.at[student_index, "세진코인"])
     st.sidebar.markdown("---")
     st.sidebar.subheader("📌 학생 정보")
     st.sidebar.write(f"**이름:** {selected_student}")
-    st.sidebar.write(f"**보유 코인:** {student_coins}개")
+    st.sidebar.write(f"**보유 코인:** {student_coins:.1f}개")
     st.sidebar.markdown("---")
-
 
 # --- 📊 통계용 UI --- 
 elif user_type == "통계용":
