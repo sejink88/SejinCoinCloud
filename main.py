@@ -16,7 +16,6 @@ def connect_gsheet():
         scopes=["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     )
     client = gspread.authorize(creds)
-    
     # 👉 Google Sheets URL 사용
     sheet_url = st.secrets["general"]["spreadsheet"]  # secrets.toml 파일에서 불러오기
     sheet = client.open_by_url(sheet_url).sheet1  # 첫 번째 시트 선택
@@ -69,13 +68,12 @@ def add_record(student_index, activity, reward=None, additional_info=None):
 st.markdown(
     """
     <style>
-    /* 배경화면 및 GIF 설정 */
+    /* 전체 배경 설정: 바둑판식 이미지 */
     .stApp {
         background: url('https://global-assets.benzinga.com/kr/2025/02/16222019/1739712018-Cryptocurrency-Photo-by-SvetlanaParnikov.jpeg') repeat !important;
         background-size: 150px 150px !important;
     }
-
-    /* 중앙 콘텐츠 영역 오버레이 */
+    /* 중앙 콘텐츠 영역 오버레이로 가독성 향상 */
     .content-container {
         background-color: rgba(0, 0, 0, 0.6);
         padding: 20px;
@@ -83,8 +81,7 @@ st.markdown(
         max-width: 800px;
         margin: auto;
     }
-
-    /* 헤더 비트코인 GIF 추가 */
+    /* 헤더 이미지 스타일 */
     .header-img {
         width: 100%;
         max-height: 300px;
@@ -92,13 +89,11 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-
     /* 텍스트 색상 및 폰트 설정 */
     html, body, [class*="css"] {
         color: #ffffff;
         font-family: 'Orbitron', sans-serif;
     }
-
     /* 버튼 스타일링 */
     .stButton>button {
          background-color: #808080 !important;
@@ -127,7 +122,7 @@ st.markdown(
 # 모든 주요 콘텐츠를 감쌀 컨테이너
 st.markdown('<div class="content-container">', unsafe_allow_html=True)
 
-# --- 🎓 UI 선택 --- 
+# --- 🎓 UI 선택 ---
 user_type = st.sidebar.radio("모드를 선택하세요", ["학생용", "교사용", "통계용", "로그 확인"])
 
 # 데이터 로드
@@ -225,15 +220,20 @@ elif user_type == "학생용":
         st.subheader("🎰 세진코인 로또 게임 (1코인 차감)")
         chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
         
-        # 로또 버튼: 추첨 진행 중에는 버튼 비활성화 (session_state 활용)
-        if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button", disabled=st.session_state.get("drawing", False)):
-            st.session_state["drawing"] = True  # 추첨 시작 상태
+        # 로또 버튼: session_state["drawing"] 값에 따라 비활성화됨
+        def start_lotto():
+            st.session_state["drawing"] = True
 
+        if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button", disabled=st.session_state.get("drawing", False), on_click=start_lotto):
+            pass
+
+        # 추첨 로직: 버튼 클릭 후 session_state["drawing"]가 True이면 실행
+        if st.session_state.get("drawing", False):
             if student_coins < 1:
                 st.error("세진코인이 부족하여 로또를 진행할 수 없습니다.")
                 st.session_state["drawing"] = False
             else:
-                # 10초 사전 카운트다운 (버튼 클릭 후)
+                # 10초 사전 카운트다운 동안 버튼은 비활성화됨
                 countdown_placeholder = st.empty()
                 for i in range(10, 0, -1):
                     countdown_placeholder.markdown(f"**로또 추첨까지 {i}초 남음...**")
@@ -244,7 +244,7 @@ elif user_type == "학생용":
                 data.at[student_index, "세진코인"] -= 1
                 pool = list(range(1, 21))
                 main_balls = random.sample(pool, 3)
-
+                
                 # 메인 공 3개를 3초 간격으로 순차적으로 표시
                 for idx, ball in enumerate(main_balls, start=1):
                     ball_placeholder = st.empty()
