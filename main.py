@@ -65,17 +65,17 @@ def add_record(student_index, activity, reward=None, additional_info=None):
     record_list.append(new_record)
     data.at[student_index, "기록"] = str(record_list)
 
-# --- 🌟 UI 스타일 ---
-# 전체 배경은 바둑판식으로 적용하되, 중앙 콘텐츠 영역은 반투명 오버레이로 가독성을 높임
+# --- 🌟 UI 스타일 --- 
 st.markdown(
     """
     <style>
-    /* 전체 배경 설정 (바둑판식) */
+    /* 배경화면 및 GIF 설정 */
     .stApp {
-        background: url('https://global-assets.benzinga.com/kr/2025/02/16222019/1739712018-Cryptocurrency-Photo-by-SvetlanaParnikov.jpeg') repeat;
-        background-size: 150px 150px;
+        background: url('https://global-assets.benzinga.com/kr/2025/02/16222019/1739712018-Cryptocurrency-Photo-by-SvetlanaParnikov.jpeg') repeat !important;
+        background-size: 150px 150px !important;
     }
-    /* 중앙 콘텐츠 오버레이 */
+
+    /* 중앙 콘텐츠 영역 오버레이 */
     .content-container {
         background-color: rgba(0, 0, 0, 0.6);
         padding: 20px;
@@ -83,7 +83,8 @@ st.markdown(
         max-width: 800px;
         margin: auto;
     }
-    /* 헤더 이미지 스타일 */
+
+    /* 헤더 비트코인 GIF 추가 */
     .header-img {
         width: 100%;
         max-height: 300px;
@@ -91,11 +92,13 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 텍스트 및 폰트 */
+
+    /* 텍스트 색상 및 폰트 설정 */
     html, body, [class*="css"] {
         color: #ffffff;
         font-family: 'Orbitron', sans-serif;
     }
+
     /* 버튼 스타일링 */
     .stButton>button {
          background-color: #808080 !important;
@@ -113,7 +116,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 헤더 비트코인 GIF 이미지 (중앙 콘텐츠 영역 위에 위치)
+# 헤더 비트코인 GIF 이미지
 st.markdown(
     '<div style="text-align:center;">'
     '<img class="header-img" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExemVldTNsMGVpMjZzdjhzc3hnbzl0d2szYjNoNXY2ZGt4ZXVtNncyciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/30VBSGB7QW1RJpNcHO/giphy.gif" alt="Bitcoin GIF">'
@@ -121,7 +124,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# 주요 콘텐츠는 .content-container 안에 배치
+# 모든 주요 콘텐츠를 감쌀 컨테이너
 st.markdown('<div class="content-container">', unsafe_allow_html=True)
 
 # --- 🎓 UI 선택 --- 
@@ -130,7 +133,7 @@ user_type = st.sidebar.radio("모드를 선택하세요", ["학생용", "교사�
 # 데이터 로드
 data = load_data()
 
-# 세션 상태 초기화 (로또 추첨 중 버튼 비활성화용)
+# 세션 상태 초기화 (로또 추첨 진행 중 버튼 비활성화용)
 if "drawing" not in st.session_state:
     st.session_state["drawing"] = False
 
@@ -143,6 +146,7 @@ if user_type == "로그 확인":
 
     student_index_log = data[(data["반"] == selected_class_log) & (data["학생"] == selected_student_log)].index[0]
     student_logs = ast.literal_eval(data.at[student_index_log, "기록"])
+
     st.subheader(f"{selected_student_log}의 활동 로그")
     for log in student_logs:
         timestamp = log["timestamp"]
@@ -220,8 +224,9 @@ elif user_type == "학생용":
     if password == str(data.at[student_index, "비밀번호"]):
         st.subheader("🎰 세진코인 로또 게임 (1코인 차감)")
         chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
-        # 로또 버튼은 추첨 중이면 비활성화됨
-        if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button", disabled=st.session_state["drawing"]):
+        
+        # 로또 버튼: 추첨 진행 중에는 버튼 비활성화 (session_state 활용)
+        if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button", disabled=st.session_state.get("drawing", False)):
             st.session_state["drawing"] = True  # 추첨 시작 상태
 
             if student_coins < 1:
@@ -235,25 +240,20 @@ elif user_type == "학생용":
                     time.sleep(1)
                 countdown_placeholder.empty()
 
-                # 추첨 전에 1코인 차감
+                # 1코인 차감
                 data.at[student_index, "세진코인"] -= 1
-
-                # 메인 공 3개와 보너스 공 미리 생성
                 pool = list(range(1, 21))
                 main_balls = random.sample(pool, 3)
-                bonus_ball = random.choice([n for n in pool if n not in main_balls])
 
-                # 각 메인 공을 3초 간격으로 순차적으로 추첨
-                drawn_balls = []
+                # 메인 공 3개를 3초 간격으로 순차적으로 표시
                 for idx, ball in enumerate(main_balls, start=1):
                     ball_placeholder = st.empty()
                     for j in range(3, 0, -1):
                         ball_placeholder.markdown(f"**{idx}번째 공 추첨 중... {j}초 남음**")
                         time.sleep(1)
                     ball_placeholder.markdown(f"**{idx}번째 공: {ball}** :tada:")
-                    drawn_balls.append(ball)
 
-                # 당첨 확인: 학생이 선택한 숫자와 비교
+                # 당첨 여부 확인 (메인 공과 학생 선택 번호 비교)
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
                 reward = None
@@ -262,15 +262,15 @@ elif user_type == "학생용":
                     st.success("🎉 1등 당첨! 상품: 치킨")
                     reward = "치킨"
                 elif match_count == 2:
-                    # 2개 맞은 경우 보너스 공 추첨 (5초 딜레이)
+                    # 2개 맞은 경우에 한해 5초 후 보너스 공 추첨
                     bonus_placeholder = st.empty()
                     for k in range(5, 0, -1):
                         bonus_placeholder.markdown(f"**보너스 공 추첨까지 {k}초 남음...**")
                         time.sleep(1)
                     bonus_placeholder.empty()
-                    bonus_placeholder.markdown(f"**보너스 공: {bonus_ball}** :sparkles:")
-
-                    # 남은 번호와 보너스 공 비교
+                    bonus_ball = random.choice([n for n in pool if n not in main_balls])
+                    st.write(f"**보너스 공: {bonus_ball}** :sparkles:")
+                    
                     remaining_number = list(set(chosen_numbers) - matches)[0]
                     if remaining_number == bonus_ball:
                         st.success("🎉 2등 당첨! 상품: 햄버거세트")
