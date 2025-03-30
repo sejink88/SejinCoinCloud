@@ -87,6 +87,7 @@ st.markdown(
     """
     <style>
     .stApp {
+        /* 배경 이미지를 지정한 링크로 채우기 */
         background: url('https://i.ibb.co/vCZs9W58/bgi2.jpg') no-repeat center center fixed !important;
         background-size: cover !important;
     }
@@ -105,14 +106,10 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 전역 텍스트 스타일 (검은색 반투명 배경 포함) */
+    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
-    }
-    /* inline으로 배경 제거할 때 사용할 클래스 */
-    .no-bg {
-        background-color: transparent !important;
     }
     html, body, [class*="css"] {
         color: #ffffff;
@@ -238,10 +235,7 @@ elif user_type == "학생용":
         # 선택한 번호 출력: 빨간색 배경, 흰색 텍스트, 글자 크기 150%
         if chosen_numbers:
             chosen_str = ", ".join(map(str, chosen_numbers))
-            st.markdown(
-                f"<span class='no-bg' style='background-color:red !important; color:white !important; font-size:150%; padding:4px;'>선택한 번호: {chosen_str}</span>",
-                unsafe_allow_html=True
-            )
+            st.markdown(f"<span style='background-color:red; color:white; font-size:150%; padding:4px;'>선택한 번호: {chosen_str}</span>", unsafe_allow_html=True)
         def start_lotto():
             st.session_state["drawing"] = True
             # 버튼 누르는 즉시 1코인 차감
@@ -271,7 +265,7 @@ elif user_type == "학생용":
                     ball_placeholder.image(main_ball_gif, width=200)
                     time.sleep(3)
                     ball_placeholder.markdown(
-                        f"<span class='no-bg' style='font-size:300%; background-color:red !important; color:white !important;'>{mapping[idx]} 공: {ball}</span> :tada:",
+                        f"<span style='font-size:300%; background-color:red; color:white;'>{mapping[idx]} 공: {ball}</span> :tada:",
                         unsafe_allow_html=True
                     )
                 matches = set(chosen_numbers) & set(main_balls)
@@ -292,7 +286,7 @@ elif user_type == "학생용":
                     time.sleep(3)
                     bonus_ball = random.choice([n for n in pool if n not in main_balls])
                     bonus_placeholder.markdown(
-                        f"<span class='no-bg' style='font-size:300%; background-color:red !important; color:white !important;'>보너스 공: {bonus_ball}</span> :sparkles:",
+                        f"<span style='font-size:300%; background-color:red; color:white;'>보너스 공: {bonus_ball}</span> :sparkles:",
                         unsafe_allow_html=True
                     )
                     remaining_number = list(set(chosen_numbers) - matches)[0]
