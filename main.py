@@ -16,7 +16,6 @@ def connect_gsheet():
         scopes=["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     )
     client = gspread.authorize(creds)
-    # 👉 Google Sheets URL 사용
     sheet_url = st.secrets["general"]["spreadsheet"]
     sheet = client.open_by_url(sheet_url).sheet1
     return sheet
@@ -87,12 +86,10 @@ st.markdown(
 st.markdown(
     """
     <style>
-    /* 전체 배경: 바둑판식 이미지 */
     .stApp {
         background: url('https://global-assets.benzinga.com/kr/2025/02/16222019/1739712018-Cryptocurrency-Photo-by-SvetlanaParnikov.jpeg') repeat !important;
         background-size: 150px 150px !important;
     }
-    /* 중앙 콘텐츠 영역: 반투명 배경 및 확대된 글씨 */
     .content-container {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 20px;
@@ -101,7 +98,6 @@ st.markdown(
         margin: auto;
         font-size: 1.2em;
     }
-    /* 헤더 이미지 스타일 */
     .header-img {
         width: 100%;
         max-height: 300px;
@@ -109,12 +105,10 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 텍스트 및 폰트 설정 */
     html, body, [class*="css"] {
         color: #ffffff;
         font-family: 'Orbitron', sans-serif;
     }
-    /* 버튼 스타일링 */
     .stButton>button {
          background-color: #808080 !important;
          color: #fff;
@@ -128,10 +122,10 @@ st.markdown(
     }
     </style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
 
-# 헤더 비트코인 GIF 이미지
+# 헤더 이미지
 st.markdown(
     '<div style="text-align:center;">'
     '<img class="header-img" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExemVldTNsMGVpMjZzdjhzc3hnbzl0d2szYjNoNXY2ZGt4ZXVtNncyciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/30VBSGB7QW1RJpNcHO/giphy.gif" alt="Bitcoin GIF">'
@@ -139,16 +133,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# 모든 주요 콘텐츠를 감쌀 컨테이너
 st.markdown('<div class="content-container">', unsafe_allow_html=True)
 
 # --- 🎓 UI 선택 ---
 user_type = st.sidebar.radio("모드를 선택하세요", ["학생용", "교사용", "통계용", "로그 확인"])
 
-# 데이터 로드
 data = load_data()
 
-# 세션 상태 초기화 (로또 추첨 진행 중 버튼 비활성화용)
 if "drawing" not in st.session_state:
     st.session_state["drawing"] = False
 
@@ -242,10 +233,10 @@ elif user_type == "학생용":
                 st.error("세진코인이 부족하여 로또를 진행할 수 없습니다.")
                 st.session_state["drawing"] = False
             else:
-                # 10초 사전 카운트다운 + 새 로딩 GIF 표시
+                # 초기 딜레이: 7초로 변경, 새 로딩 GIF 사용
                 countdown_placeholder = st.empty()
                 loading_image = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjNmaDVzbTlrYWJrMXZzMGZkam5tOWc5OHQ5eDBhYm94OWxzN2hnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/APqEbxBsVlkWSuFpth/giphy.gif"
-                for i in range(10, 0, -1):
+                for i in range(7, 0, -1):
                     countdown_placeholder.markdown(f"**로또 추첨까지 {i}초 남음...**")
                     countdown_placeholder.image(loading_image, width=200)
                     time.sleep(1)
@@ -254,13 +245,13 @@ elif user_type == "학생용":
                 data.at[student_index, "세진코인"] -= 1
                 pool = list(range(1, 21))
                 main_balls = random.sample(pool, 3)
-                # 각 메인 공 추첨 전 지정된 gif를 3초 동안 표시 후 공 번호 표시 (글자 크기 5배)
                 main_ball_gif = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExazYzZXp0azhvdjF1M3BtM3JobjVic2Y3ZWIyaTh4ZXpkNDNwdDZtdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dvgefaMHmaN2g/giphy.gif"
                 for idx, ball in enumerate(main_balls, start=1):
                     ball_placeholder = st.empty()
                     ball_placeholder.image(main_ball_gif, width=200)
                     time.sleep(3)
                     ball_placeholder.markdown(f"<span style='font-size:500%;'>{idx}번째 공: {ball}</span> :tada:", unsafe_allow_html=True)
+                # 보너스 공 추첨 (2개 일치 시)
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
                 reward = None
@@ -273,8 +264,13 @@ elif user_type == "학생용":
                         bonus_placeholder.markdown(f"**보너스 공 추첨까지 {k}초 남음...**")
                         time.sleep(1)
                     bonus_placeholder.empty()
+                    # 보너스 공 추첨 전 동일한 gif 3초 표시 후 당첨 번호 5배 글자로 표시
+                    bonus_ball_gif = main_ball_gif
+                    bonus_placeholder = st.empty()
+                    bonus_placeholder.image(bonus_ball_gif, width=200)
+                    time.sleep(3)
                     bonus_ball = random.choice([n for n in pool if n not in main_balls])
-                    st.write(f"**보너스 공: {bonus_ball}** :sparkles:")
+                    bonus_placeholder.markdown(f"<span style='font-size:500%;'>보너스 공: {bonus_ball}</span> :sparkles:", unsafe_allow_html=True)
                     remaining_number = list(set(chosen_numbers) - matches)[0]
                     if remaining_number == bonus_ball:
                         st.success("🎉 2등 당첨! 상품: 햄버거세트")
