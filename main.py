@@ -65,23 +65,21 @@ def add_record(student_index, activity, reward=None, additional_info=None):
     data.at[student_index, "기록"] = str(record_list)
 
 # --- BGM 및 효과음 삽입 ---
-# 세션 초기화: bgm_on 플래그 (초기 기본값 True)
 if "bgm_on" not in st.session_state:
     st.session_state["bgm_on"] = True
 
 def render_bgm():
     if st.session_state["bgm_on"]:
+        # 로컬 파일인 bgm.mp3를 재생 (프로젝트 폴더에 bgm.mp3 파일이 있어야 함)
         return """
         <audio id="bgm" autoplay loop>
-            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+            <source src="bgm.mp3" type="audio/mpeg">
         </audio>
         """
     else:
         return ""
 
 st.markdown(render_bgm(), unsafe_allow_html=True)
-
-# 효과음 (효과음은 필요할 때 재생)
 st.markdown(
     """
     <audio id="drawSound">
@@ -247,7 +245,7 @@ elif user_type == "학생용":
                 st.error("세진코인이 부족하여 로또를 진행할 수 없습니다.")
                 st.session_state["drawing"] = False
             else:
-                # 초기 딜레이: 7초 (새 로딩 GIF 사용)
+                # 초기 딜레이: 7초, 새 로딩 GIF 사용
                 countdown_placeholder = st.empty()
                 loading_image = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjNmaDVzbTlrYWJrMXZzMGZkam5tOWc5OHQ5eDBhYm94OWxzN2hnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/APqEbxBsVlkWSuFpth/giphy.gif"
                 for i in range(7, 0, -1):
@@ -265,7 +263,7 @@ elif user_type == "학생용":
                     ball_placeholder.image(main_ball_gif, width=200)
                     time.sleep(3)
                     ball_placeholder.markdown(f"<span style='font-size:500%;'>{idx}번째 공: {ball}</span> :tada:", unsafe_allow_html=True)
-                # 보너스 공 추첨: 딜레이 10초
+                # 보너스 공 추첨: 딜레이 10초, 보너스 공 gif 표시 후 당첨 번호 5배 글자 크기
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
                 reward = None
@@ -301,14 +299,12 @@ elif user_type == "학생용":
                 save_data(data)
                 st.success(f"당첨 결과: {reward}!")
                 st.session_state["drawing"] = False
-                st.experimental_rerun()  # 페이지 새로고침으로 버튼 재활성화
-    student_coins = float(data.at[student_index, "세진코인"])
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("📌 학생 정보")
-    st.sidebar.write(f"**이름:** {selected_student}")
-    st.sidebar.write(f"**보유 코인:** {student_coins:.1f}개")
-    st.sidebar.markdown("---")
-
+        student_coins = float(data.at[student_index, "세진코인"])
+        st.sidebar.markdown("---")
+        st.sidebar.subheader("📌 학생 정보")
+        st.sidebar.write(f"**이름:** {selected_student}")
+        st.sidebar.write(f"**보유 코인:** {student_coins:.1f}개")
+        st.sidebar.markdown("---")
 # --- 통계용 UI ---
 elif user_type == "통계용":
     st.subheader("📊 로또 당첨 통계")
