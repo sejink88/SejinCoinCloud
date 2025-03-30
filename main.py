@@ -64,15 +64,7 @@ def add_record(student_index, activity, reward=None, additional_info=None):
     record_list.append(new_record)
     data.at[student_index, "기록"] = str(record_list)
 
-# --- 효과음 삽입 ---
-st.markdown(
-    """
-    <audio id="drawSound">
-        <source src="https://www.soundjay.com/button/sounds/button-09.mp3" type="audio/mpeg">
-    </audio>
-    """,
-    unsafe_allow_html=True
-)
+
 
 # --- BGM 재생: 학생 비밀번호 입력 시 재생 (로컬 파일 "bgm.mp3") ---
 def render_bgm():
@@ -87,7 +79,6 @@ st.markdown(
     """
     <style>
     .stApp {
-        /* 배경 이미지를 지정한 링크로 채우기 */
         background: url('https://i.ibb.co/vCZs9W58/bgi2.jpg') no-repeat center center fixed !important;
         background-size: cover !important;
     }
@@ -106,7 +97,6 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -116,15 +106,20 @@ st.markdown(
         font-family: 'Orbitron', sans-serif;
     }
     .stButton>button {
-         background-color: #808080 !important;
-         color: #fff;
-         font-weight: bold;
-         border: none;
-         border-radius: 8px;
-         padding: 10px 20px;
-         font-size: 16px;
-         transition: transform 0.2s ease-in-out;
-         box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
+        background-color: #808080 !important;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 16px;
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
+    }
+    /* 버튼 안 글씨 배경 제거 스타일 추가 */
+    .stButton button span {
+        background-color: transparent !important;
+        padding: 0 !important;
     }
     </style>
     """,
