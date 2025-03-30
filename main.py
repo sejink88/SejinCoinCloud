@@ -125,7 +125,7 @@ st.markdown(
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* 기본 스타일 복원: 사이드바 모드 선택 및 멀티셀렉트 옵션 배경 */
+    /* 기본 스타일 복원: 사이드바 및 멀티셀렉트 위젯 기본 배경 유지 */
     </style>
     """,
     unsafe_allow_html=True,
@@ -239,7 +239,9 @@ elif user_type == "학생용":
         def start_lotto():
             st.session_state["drawing"] = True
         if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button", disabled=st.session_state.get("drawing", False), on_click=start_lotto):
-            pass
+            # 즉시 코인 차감
+            data.at[student_index, "세진코인"] -= 1
+            save_data(data)
         if st.session_state.get("drawing", False):
             if student_coins < 1:
                 st.error("세진코인이 부족하여 로또를 진행할 수 없습니다.")
@@ -253,8 +255,6 @@ elif user_type == "학생용":
                     countdown_placeholder.image(loading_image, width=200)
                     time.sleep(1)
                 countdown_placeholder.empty()
-                # 1코인 차감 (게임 시작 버튼 누른 직후 이미 차감되어야 함)
-                data.at[student_index, "세진코인"] -= 1
                 pool = list(range(1, 21))
                 main_balls = random.sample(pool, 3)
                 main_ball_gif = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExazYzZXp0azhvdjF1M3BtM3JobjVic2Y3ZWIyaTh4ZXpkNDNwdDZtdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dvgefaMHmaN2g/giphy.gif"
@@ -267,7 +267,6 @@ elif user_type == "학생용":
                         f"<span style='font-size:300%; background-color:red; color:white;'>{mapping[idx]} 공: {ball}</span> :tada:",
                         unsafe_allow_html=True
                     )
-                # 보너스 공 추첨: 딜레이 10초, 보너스 공 추첨 전 gif 3초, 번호 300% 글자 크기, 빨간 배경
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
                 reward = None
