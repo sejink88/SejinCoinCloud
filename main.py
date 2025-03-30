@@ -106,11 +106,16 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
-    p, h1, h2, h3, h4, h5, h6, span {
-        background-color: rgba(0, 0, 0, 0.7);
-        padding: 4px;
-    }
+    /* 모든 텍스트에 검은색 반투명 배경 적용 */
+p, h1, h2, h3, h4, h5, h6, span {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 4px;
+}
+
+/* 버튼 내부 글씨는 배경 제거 */
+.stButton button, .stNumberInput input {
+    background: none !important;
+}
     html, body, [class*="css"] {
         color: #ffffff;
         font-family: 'Orbitron', sans-serif;
