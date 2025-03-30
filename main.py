@@ -105,7 +105,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 모든 기본 텍스트에 검은색 반투명 배경과 패딩 적용 */
+    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -125,17 +125,10 @@ st.markdown(
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* --- 오버라이드: 사이드바 모드 선택 라디오 버튼 배경 제거 --- */
-    .stSidebar .stRadio label {
+    /* 오버라이드: 사이드바 모드 선택 라디오 버튼 및 멀티셀렉트 옵션의 배경 제거 */
+    .stSidebar .stRadio label, div[data-baseweb="select"] * , div[role="option"] {
          background-color: transparent !important;
          padding: 0 !important;
-    }
-    /* --- 오버라이드: 멀티셀렉트 번호 선택 위젯의 옵션 배경 제거 --- */
-    div[data-baseweb="select"] * {
-         background-color: transparent !important;
-    }
-    div[role="option"] {
-         background-color: transparent !important;
     }
     </style>
     """,
@@ -243,6 +236,10 @@ elif user_type == "학생용":
         st.audio("bgm.mp3", format="audio/mp3")
         st.subheader("🎰 세진코인 로또 게임 (1코인 차감)")
         chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
+        # 선택한 번호 출력 (빨간색 배경, 흰색 텍스트)
+        if chosen_numbers:
+            chosen_str = ", ".join(map(str, chosen_numbers))
+            st.markdown(f"<span style='background-color:red; color:white; font-size:150%; padding:4px;'>선택한 번호: {chosen_str}</span>", unsafe_allow_html=True)
         def start_lotto():
             st.session_state["drawing"] = True
         if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button", disabled=st.session_state.get("drawing", False), on_click=start_lotto):
@@ -269,8 +266,8 @@ elif user_type == "학생용":
                     ball_placeholder = st.empty()
                     ball_placeholder.image(main_ball_gif, width=200)
                     time.sleep(3)
-                    ball_placeholder.markdown(f"<span style='font-size:500%;'>{idx}번째 공: {ball}</span> :tada:", unsafe_allow_html=True)
-                # 보너스 공 추첨: 딜레이 10초, 보너스 공 추첨 전 gif 3초, 번호 5배 글자 크기
+                    ball_placeholder.markdown(f"<span style='font-size:500%; background-color:red; color:white;'>{idx}번째 공: {ball}</span> :tada:", unsafe_allow_html=True)
+                # 보너스 공 추첨: 딜레이 10초, 보너스 공 추첨 전 gif 3초, 번호 5배 글자 크기, 빨간 배경
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
                 reward = None
@@ -288,7 +285,7 @@ elif user_type == "학생용":
                     bonus_placeholder.image(bonus_ball_gif, width=200)
                     time.sleep(3)
                     bonus_ball = random.choice([n for n in pool if n not in main_balls])
-                    bonus_placeholder.markdown(f"<span style='font-size:500%;'>보너스 공: {bonus_ball}</span> :sparkles:", unsafe_allow_html=True)
+                    bonus_placeholder.markdown(f"<span style='font-size:500%; background-color:red; color:white;'>보너스 공: {bonus_ball}</span> :sparkles:", unsafe_allow_html=True)
                     remaining_number = list(set(chosen_numbers) - matches)[0]
                     if remaining_number == bonus_ball:
                         st.success("🎉 2등 당첨! 상품: 햄버거세트")
