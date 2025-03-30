@@ -70,7 +70,7 @@ if "bgm_on" not in st.session_state:
 
 def render_bgm():
     if st.session_state["bgm_on"]:
-        # 로컬 파일인 bgm.mp3를 재생 (프로젝트 폴더에 bgm.mp3 파일이 있어야 함)
+        # 로컬 파일인 bgm.mp3 사용 (프로젝트 폴더에 bgm.mp3 파일 필요)
         return """
         <audio id="bgm" autoplay loop>
             <source src="bgm.mp3" type="audio/mpeg">
@@ -92,7 +92,6 @@ st.markdown(
 # --- 사이드바 BGM On/Off 토글 ---
 if st.sidebar.button("Toggle BGM"):
     st.session_state["bgm_on"] = not st.session_state["bgm_on"]
-    st.experimental_rerun()
 
 # --- 🌟 UI 스타일 ---
 st.markdown(
@@ -263,7 +262,7 @@ elif user_type == "학생용":
                     ball_placeholder.image(main_ball_gif, width=200)
                     time.sleep(3)
                     ball_placeholder.markdown(f"<span style='font-size:500%;'>{idx}번째 공: {ball}</span> :tada:", unsafe_allow_html=True)
-                # 보너스 공 추첨: 딜레이 10초, 보너스 공 gif 표시 후 당첨 번호 5배 글자 크기
+                # 보너스 공 추첨: 딜레이 10초, 보너스 공 추첨 전 gif 3초, 번호 글자 크기 5배
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
                 reward = None
