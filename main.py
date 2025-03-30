@@ -74,25 +74,22 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- BGM 재생: 학생이 비밀번호 입력 시 재생하도록 처리 (토글 제거) ---
-# BGM은 로컬 파일 "bgm.mp3" 사용 (프로젝트 폴더에 bgm.mp3 파일 필요)
+# --- BGM 재생: 학생 비밀번호 입력 시 재생 (로컬 파일 "bgm.mp3") ---
 def render_bgm():
     return """
     <audio id="bgm" autoplay loop>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
     """
-    
+
 # --- 🌟 UI 스타일 ---
 st.markdown(
     """
     <style>
-    /* 전체 배경: 바둑판식 이미지 */
     .stApp {
         background: url('https://global-assets.benzinga.com/kr/2025/02/16222019/1739712018-Cryptocurrency-Photo-by-SvetlanaParnikov.jpeg') repeat !important;
         background-size: 150px 150px !important;
     }
-    /* 중앙 콘텐츠 영역: 반투명 배경 및 확대된 글씨 */
     .content-container {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 20px;
@@ -101,7 +98,6 @@ st.markdown(
         margin: auto;
         font-size: 1.2em;
     }
-    /* 헤더 이미지 스타일 */
     .header-img {
         width: 100%;
         max-height: 300px;
@@ -109,7 +105,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 기본 텍스트 및 폰트 설정: 모든 p, h1~h6, span에 반투명 검정 배경 및 패딩 적용 */
+    /* 모든 p, h1~h6, span에 검은색 배경과 패딩 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -118,7 +114,6 @@ st.markdown(
         color: #ffffff;
         font-family: 'Orbitron', sans-serif;
     }
-    /* 버튼 스타일링 */
     .stButton>button {
          background-color: #808080 !important;
          color: #fff;
@@ -129,6 +124,15 @@ st.markdown(
          font-size: 16px;
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
+    }
+    /* --- 오버라이드: 모드 선택 라디오 버튼의 텍스트 배경 제거 --- */
+    .stSidebar .stRadio label {
+         background-color: transparent !important;
+         padding: 0 !important;
+    }
+    /* --- 오버라이드: 멀티셀렉트 옵션(번호 선택) 배경 제거 --- */
+    div[role="listbox"] * {
+         background-color: transparent !important;
     }
     </style>
     """,
