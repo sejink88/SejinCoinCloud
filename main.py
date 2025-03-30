@@ -261,7 +261,7 @@ elif user_type == "학생용":
                 # 10초 사전 카운트다운 + 재미있는 로딩 GIF 표시
                 countdown_placeholder = st.empty()
                 loading_placeholder = st.empty()
-                loading_image = "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+                loading_image = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmZmd2N5b3JoZHdmNTV6NTBhODJwcHNicTB0dmJsb3NoNDZibjJmciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/cfF1c9rnGV8cBJIsjp/giphy.gif"
                 for i in range(10, 0, -1):
                     countdown_placeholder.markdown(f"**로또 추첨까지 {i}초 남음...**")
                     loading_placeholder.image(loading_image, width=200)
