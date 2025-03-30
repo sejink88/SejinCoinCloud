@@ -73,7 +73,7 @@ def render_bgm():
         # 로컬 파일인 bgm.mp3 사용 (프로젝트 폴더에 bgm.mp3 파일 필요)
         return """
         <audio id="bgm" autoplay loop>
-            <source src="bgm.mp3" type="audio/mpeg">
+            <source src="bgm.mp3" type="audio/mp3">
         </audio>
         """
     else:
