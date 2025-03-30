@@ -87,7 +87,8 @@ st.markdown(
     """
     <style>
     .stApp {
-        background: url('https://cdn.pixabay.com/photo/2017/12/26/21/43/blockchain-3041480_640.jpg') no-repeat center center fixed !important;
+        /* 로컬 파일 bgi2.jpg를 전체 배경으로 채움 */
+        background: url('bgi2.jpg') no-repeat center center fixed !important;
         background-size: cover !important;
     }
     .content-container {
@@ -105,7 +106,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
+    /* 기본 텍스트에 검은색 반투명 배경과 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -125,7 +126,7 @@ st.markdown(
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* 기본 스타일 복원: 사이드바 및 멀티셀렉트 위젯 기본 배경 유지 */
+    /* 사이드바 및 멀티셀렉트 기본 배경 복원 */
     </style>
     """,
     unsafe_allow_html=True,
@@ -238,10 +239,11 @@ elif user_type == "학생용":
             st.markdown(f"<span style='background-color:red; color:white; font-size:150%; padding:4px;'>선택한 번호: {chosen_str}</span>", unsafe_allow_html=True)
         def start_lotto():
             st.session_state["drawing"] = True
-        if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button", disabled=st.session_state.get("drawing", False), on_click=start_lotto):
-            # 즉시 코인 차감
+            # 버튼 누르는 즉시 1코인 차감
             data.at[student_index, "세진코인"] -= 1
             save_data(data)
+        if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button", disabled=st.session_state.get("drawing", False), on_click=start_lotto):
+            pass
         if st.session_state.get("drawing", False):
             if student_coins < 1:
                 st.error("세진코인이 부족하여 로또를 진행할 수 없습니다.")
