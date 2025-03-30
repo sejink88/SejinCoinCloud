@@ -64,22 +64,7 @@ def add_record(student_index, activity, reward=None, additional_info=None):
     record_list.append(new_record)
     data.at[student_index, "기록"] = str(record_list)
 
-# --- BGM 및 효과음 삽입 ---
-if "bgm_on" not in st.session_state:
-    st.session_state["bgm_on"] = True
-
-def render_bgm():
-    if st.session_state["bgm_on"]:
-        # 로컬 파일인 bgm.mp3 사용 (프로젝트 폴더에 bgm.mp3 파일 필요)
-        return """
-        <audio id="bgm" autoplay loop>
-            <source src="bgm.mp3" type="audio/mp3">
-        </audio>
-        """
-    else:
-        return ""
-
-st.markdown(render_bgm(), unsafe_allow_html=True)
+# --- 효과음 삽입 (효과음은 계속 유지) ---
 st.markdown(
     """
     <audio id="drawSound">
@@ -88,10 +73,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# --- 사이드바 BGM On/Off 토글 ---
-if st.sidebar.button("Toggle BGM"):
-    st.session_state["bgm_on"] = not st.session_state["bgm_on"]
 
 # --- 🌟 UI 스타일 ---
 st.markdown(
@@ -233,6 +214,8 @@ elif user_type == "학생용":
     st.markdown(f"<h2>{selected_student}님의 세진코인은 {student_coins:.1f}개입니다.</h2>", unsafe_allow_html=True)
     password = st.text_input("비밀번호를 입력하세요:", type="password")
     if password == str(data.at[student_index, "비밀번호"]):
+        # 학생이 비밀번호를 입력하면 로컬 파일 bgm.mp3 재생 (자동 재생)
+        st.audio("bgm.mp3", format="audio/mp3")
         st.subheader("🎰 세진코인 로또 게임 (1코인 차감)")
         chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
         def start_lotto():
@@ -262,7 +245,7 @@ elif user_type == "학생용":
                     ball_placeholder.image(main_ball_gif, width=200)
                     time.sleep(3)
                     ball_placeholder.markdown(f"<span style='font-size:500%;'>{idx}번째 공: {ball}</span> :tada:", unsafe_allow_html=True)
-                # 보너스 공 추첨: 딜레이 10초, 보너스 공 추첨 전 gif 3초, 번호 글자 크기 5배
+                # 보너스 공 추첨: 딜레이 10초, 보너스 공 추첨 전 gif 3초, 번호 5배 글자 크기
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
                 reward = None
