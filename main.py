@@ -64,7 +64,7 @@ def add_record(student_index, activity, reward=None, additional_info=None):
     record_list.append(new_record)
     data.at[student_index, "기록"] = str(record_list)
 
-# --- 효과음 삽입 (효과음은 계속 유지) ---
+# --- 효과음 삽입 ---
 st.markdown(
     """
     <audio id="drawSound">
@@ -105,7 +105,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
+    /* 모든 기본 텍스트에 검은색 반투명 배경과 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -125,13 +125,16 @@ st.markdown(
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* 모드 선택 라디오 버튼의 텍스트 배경 제거 */
+    /* --- 오버라이드: 사이드바 모드 선택 라디오 버튼 배경 제거 --- */
     .stSidebar .stRadio label {
          background-color: transparent !important;
          padding: 0 !important;
     }
-    /* 멀티셀렉트 옵션 배경 제거 */
-    div[role="listbox"] * {
+    /* --- 오버라이드: 멀티셀렉트 번호 선택 위젯의 옵션 배경 제거 --- */
+    div[data-baseweb="select"] * {
+         background-color: transparent !important;
+    }
+    div[role="option"] {
          background-color: transparent !important;
     }
     </style>
