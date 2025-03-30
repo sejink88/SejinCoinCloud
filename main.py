@@ -97,7 +97,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    p, h1, h2, h3, h4, h5, h6, span {
+    p, h1, h2, h3, h4, h5, h6,  {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
     }
