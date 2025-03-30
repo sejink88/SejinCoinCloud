@@ -212,7 +212,13 @@ if user_type == "교사용":
     st.sidebar.write(f"**이름:** {selected_student}")
     st.sidebar.write(f"**보유 코인:** {student_coins:.1f}개")
     st.sidebar.markdown("---")
-    st.markdown(f"<h2>{selected_student}님의 세진코인은 {student_coins:.1f}개입니다.</h2>", unsafe_allow_html=True)
+    st.markdown(
+    f"<h2 style='background-color: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 8px;'>"
+    f"{selected_student}님의 세진코인은 {student_coins:.1f}개입니다."
+    f"</h2>",
+    unsafe_allow_html=True
+)
+
 
 # --- 학생용 UI ---
 elif user_type == "학생용":
@@ -221,7 +227,13 @@ elif user_type == "학생용":
     selected_student = st.selectbox("학생을 선택하세요:", filtered_data["학생"].tolist())
     student_index = data[(data["반"] == selected_class) & (data["학생"] == selected_student)].index[0]
     student_coins = float(data.at[student_index, "세진코인"])
-    st.markdown(f"<h2>{selected_student}님의 세진코인은 {student_coins:.1f}개입니다.</h2>", unsafe_allow_html=True)
+    st.markdown(
+    f"<h2 style='background-color: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 8px;'>"
+    f"{selected_student}님의 세진코인은 {student_coins:.1f}개입니다."
+    f"</h2>",
+    unsafe_allow_html=True
+)
+
     password = st.text_input("비밀번호를 입력하세요:", type="password")
     if password == str(data.at[student_index, "비밀번호"]):
         # 학생이 비밀번호 입력 시 로컬 BGM 재생
