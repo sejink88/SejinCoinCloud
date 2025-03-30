@@ -87,8 +87,9 @@ st.markdown(
     """
     <style>
     .stApp {
-        background: url('https://cdn.pixabay.com/photo/2017/12/26/21/43/blockchain-3041480_640.jpg') repeat !important;
-        background-size: 150px 150px !important;
+        /* 전체 배경을 지정한 이미지로 채우고, 비율에 맞게 채움 */
+        background: url('https://99bitcoins.com/kr/wp-content/uploads/sites/6/2024/09/featured.jpg') no-repeat center center fixed !important;
+        background-size: cover !important;
     }
     .content-container {
         background-color: rgba(0, 0, 0, 0.7);
@@ -105,7 +106,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
+    /* 기본 텍스트에 검은색 반투명 배경과 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -236,7 +237,7 @@ elif user_type == "학생용":
         st.audio("bgm.mp3", format="audio/mp3")
         st.subheader("🎰 세진코인 로또 게임 (1코인 차감)")
         chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
-        # 선택한 번호 출력 (빨간색 배경, 흰색 텍스트)
+        # 선택한 번호 출력: 빨간색 배경, 흰색 텍스트, 글자 크기 150%
         if chosen_numbers:
             chosen_str = ", ".join(map(str, chosen_numbers))
             st.markdown(f"<span style='background-color:red; color:white; font-size:150%; padding:4px;'>선택한 번호: {chosen_str}</span>", unsafe_allow_html=True)
@@ -262,11 +263,15 @@ elif user_type == "학생용":
                 pool = list(range(1, 21))
                 main_balls = random.sample(pool, 3)
                 main_ball_gif = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExazYzZXp0azhvdjF1M3BtM3JobjVic2Y3ZWIyaTh4ZXpkNDNwdDZtdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dvgefaMHmaN2g/giphy.gif"
+                mapping = {1:"첫번째", 2:"두번째", 3:"세번째"}
                 for idx, ball in enumerate(main_balls, start=1):
                     ball_placeholder = st.empty()
                     ball_placeholder.image(main_ball_gif, width=200)
                     time.sleep(3)
-                    ball_placeholder.markdown(f"<span style='font-size:500%; background-color:red; color:white;'>{idx}번째 공: {ball}</span> :tada:", unsafe_allow_html=True)
+                    ball_placeholder.markdown(
+                        f"<span style='font-size:300%; background-color:red; color:white;'>{mapping[idx]} 공: {ball}</span> :tada:",
+                        unsafe_allow_html=True
+                    )
                 # 보너스 공 추첨: 딜레이 10초, 보너스 공 추첨 전 gif 3초, 번호 5배 글자 크기, 빨간 배경
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
@@ -285,7 +290,10 @@ elif user_type == "학생용":
                     bonus_placeholder.image(bonus_ball_gif, width=200)
                     time.sleep(3)
                     bonus_ball = random.choice([n for n in pool if n not in main_balls])
-                    bonus_placeholder.markdown(f"<span style='font-size:500%; background-color:red; color:white;'>보너스 공: {bonus_ball}</span> :sparkles:", unsafe_allow_html=True)
+                    bonus_placeholder.markdown(
+                        f"<span style='font-size:300%; background-color:red; color:white;'>보너스 공: {bonus_ball}</span> :sparkles:",
+                        unsafe_allow_html=True
+                    )
                     remaining_number = list(set(chosen_numbers) - matches)[0]
                     if remaining_number == bonus_ball:
                         st.success("🎉 2등 당첨! 상품: 햄버거세트")
