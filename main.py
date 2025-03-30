@@ -138,7 +138,7 @@ st.markdown(
     '</div>',
     unsafe_allow_html=True
 )
-st.markdown('<h1 style=\"text-align:center; font-size:3em; color:yellow; background-color:rgba(0,0,0,0.7); padding:10px; border-radius:10px;\">세진코인</h1>', unsafe_allow_html=True)
+st.markdown('<h1 style=\"text-align:center; font-size:3em; color:yellow; background-color:rgba(0,0,0,0.7); padding:10px; border-radius:10px;\">$$$세진코인$$$</h1>', unsafe_allow_html=True)
 
 st.markdown('<div class="content-container">', unsafe_allow_html=True)
 
