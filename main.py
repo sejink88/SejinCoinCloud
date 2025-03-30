@@ -87,7 +87,6 @@ st.markdown(
     """
     <style>
     .stApp {
-        /* 전체 배경: 지정한 이미지로 채우기 (cover) */
         background: url('https://cdn.pixabay.com/photo/2017/12/26/21/43/blockchain-3041480_640.jpg') no-repeat center center fixed !important;
         background-size: cover !important;
     }
@@ -106,7 +105,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 기본 텍스트에 검은색 반투명 배경과 패딩 적용 */
+    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -126,7 +125,7 @@ st.markdown(
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* (이전 오버라이드 CSS 삭제: 사이드바 및 멀티셀렉트의 기본 배경 복구) */
+    /* 기본 스타일 복원: 사이드바 모드 선택 및 멀티셀렉트 옵션 배경 */
     </style>
     """,
     unsafe_allow_html=True,
@@ -254,7 +253,7 @@ elif user_type == "학생용":
                     countdown_placeholder.image(loading_image, width=200)
                     time.sleep(1)
                 countdown_placeholder.empty()
-                # 1코인 차감
+                # 1코인 차감 (게임 시작 버튼 누른 직후 이미 차감되어야 함)
                 data.at[student_index, "세진코인"] -= 1
                 pool = list(range(1, 21))
                 main_balls = random.sample(pool, 3)
