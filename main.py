@@ -137,17 +137,20 @@ if "drawing" not in st.session_state:
 # --- 로그 확인 UI ---
 if user_type == "로그 확인":
     st.sidebar.subheader("📜 로그 확인")
-    log_password = st.text_input("로그 확인 암호를 입력하세요:", type="password")
+    # 반과 학생 선택 UI (세진코인 부여와 동일)
+    selected_class_log = st.sidebar.selectbox("반 선택:", data["반"].unique(), key="log_class")
+    filtered_data_log = data[data["반"] == selected_class_log]
+    selected_student_log = st.sidebar.selectbox("학생 선택:", filtered_data_log["학생"].tolist(), key="log_student")
+    student_index_log = data[(data["반"] == selected_class_log) & (data["학생"] == selected_student_log)].index[0]
+    
+    # 비밀번호 입력: 관리자 비밀번호 또는 해당 학생의 비밀번호여야 로그 표시
+    log_password = st.text_input("비밀번호 입력:", type="password")
     if log_password:
-        # 관리자 모드: 관리자 암호와 일치하면 모든 로그를 볼 수 있음
-        if log_password == st.secrets["general"]["admin_password"]:
-            st.subheader("관리자 모드 - 전체 로그 확인")
-            selected_class_log = st.selectbox("🔍 로그 확인용 반 선택:", data["반"].unique(), key="log_class")
-            filtered_data_log = data[data["반"] == selected_class_log]
-            selected_student_log = st.selectbox("🔍 로그 확인용 학생 선택:", filtered_data_log["학생"].tolist(), key="log_student")
-            student_index_log = data[(data["반"] == selected_class_log) & (data["학생"] == selected_student_log)].index[0]
+        admin_password = st.secrets["general"]["admin_password"]
+        student_password = str(data.at[student_index_log, "비밀번호"])
+        if log_password == admin_password or log_password == student_password:
+            st.subheader(f"{selected_student_log}님의 활동 로그")
             student_logs = ast.literal_eval(data.at[student_index_log, "기록"])
-            st.subheader(f"{selected_student_log}의 활동 로그")
             for log in student_logs:
                 timestamp = log["timestamp"]
                 activity = log["activity"]
@@ -160,26 +163,7 @@ if user_type == "로그 확인":
                     log_text += f" [{additional_info}]"
                 st.write(log_text)
         else:
-            # 학생 모드: 입력한 암호가 학생의 암호와 일치하면 본인 로그만 표시
-            matching_students = data[data["비밀번호"] == log_password]
-            if not matching_students.empty:
-                student_info = matching_students.iloc[0]
-                student_name = student_info["학생"]
-                student_logs = ast.literal_eval(student_info["기록"])
-                st.subheader(f"{student_name}님의 활동 로그")
-                for log in student_logs:
-                    timestamp = log["timestamp"]
-                    activity = log["activity"]
-                    reward = log.get("reward", "")
-                    additional_info = log.get("additional_info", "")
-                    log_text = f"🕒 {timestamp} - {activity}"
-                    if reward:
-                        log_text += f" (보상: {reward})"
-                    if additional_info:
-                        log_text += f" [{additional_info}]"
-                    st.write(log_text)
-            else:
-                st.error("올바른 암호를 입력하세요.")
+            st.error("올바른 비밀번호를 입력하세요.")
 
 # --- 교사용 UI ---
 if user_type == "교사용":
