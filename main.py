@@ -65,14 +65,23 @@ def add_record(student_index, activity, reward=None, additional_info=None):
     data.at[student_index, "기록"] = str(record_list)
 
 # --- BGM 및 효과음 삽입 ---
-st.markdown(
-    """
-    <audio id="bgm" autoplay loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
-    """,
-    unsafe_allow_html=True
-)
+# 세션 초기화: bgm_on 플래그 (초기 기본값 True)
+if "bgm_on" not in st.session_state:
+    st.session_state["bgm_on"] = True
+
+def render_bgm():
+    if st.session_state["bgm_on"]:
+        return """
+        <audio id="bgm" autoplay loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+        """
+    else:
+        return ""
+
+st.markdown(render_bgm(), unsafe_allow_html=True)
+
+# 효과음 (효과음은 필요할 때 재생)
 st.markdown(
     """
     <audio id="drawSound">
@@ -81,6 +90,11 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# --- 사이드바 BGM On/Off 토글 ---
+if st.sidebar.button("Toggle BGM"):
+    st.session_state["bgm_on"] = not st.session_state["bgm_on"]
+    st.experimental_rerun()
 
 # --- 🌟 UI 스타일 ---
 st.markdown(
@@ -122,7 +136,7 @@ st.markdown(
     }
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 # 헤더 이미지
@@ -233,7 +247,7 @@ elif user_type == "학생용":
                 st.error("세진코인이 부족하여 로또를 진행할 수 없습니다.")
                 st.session_state["drawing"] = False
             else:
-                # 초기 딜레이: 7초로 변경, 새 로딩 GIF 사용
+                # 초기 딜레이: 7초 (새 로딩 GIF 사용)
                 countdown_placeholder = st.empty()
                 loading_image = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjNmaDVzbTlrYWJrMXZzMGZkam5tOWc5OHQ5eDBhYm94OWxzN2hnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/APqEbxBsVlkWSuFpth/giphy.gif"
                 for i in range(7, 0, -1):
@@ -251,7 +265,7 @@ elif user_type == "학생용":
                     ball_placeholder.image(main_ball_gif, width=200)
                     time.sleep(3)
                     ball_placeholder.markdown(f"<span style='font-size:500%;'>{idx}번째 공: {ball}</span> :tada:", unsafe_allow_html=True)
-                # 보너스 공 추첨 (2개 일치 시)
+                # 보너스 공 추첨: 딜레이 10초
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
                 reward = None
@@ -260,11 +274,10 @@ elif user_type == "학생용":
                     reward = "치킨"
                 elif match_count == 2:
                     bonus_placeholder = st.empty()
-                    for k in range(5, 0, -1):
+                    for k in range(10, 0, -1):
                         bonus_placeholder.markdown(f"**보너스 공 추첨까지 {k}초 남음...**")
                         time.sleep(1)
                     bonus_placeholder.empty()
-                    # 보너스 공 추첨 전 동일한 gif 3초 표시 후 당첨 번호 5배 글자로 표시
                     bonus_ball_gif = main_ball_gif
                     bonus_placeholder = st.empty()
                     bonus_placeholder.image(bonus_ball_gif, width=200)
@@ -288,6 +301,7 @@ elif user_type == "학생용":
                 save_data(data)
                 st.success(f"당첨 결과: {reward}!")
                 st.session_state["drawing"] = False
+                st.experimental_rerun()  # 페이지 새로고침으로 버튼 재활성화
     student_coins = float(data.at[student_index, "세진코인"])
     st.sidebar.markdown("---")
     st.sidebar.subheader("📌 학생 정보")
