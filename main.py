@@ -106,10 +106,10 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 전역 텍스트 스타일: 배경 제거 (자막 스타일 삭제) */
+    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
-        background-color: transparent !important;
-        padding: 0 !important;
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 4px;
     }
     html, body, [class*="css"] {
         color: #ffffff;
@@ -126,7 +126,6 @@ st.markdown(
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* 사이드바 모드 선택 기본 스타일 유지 */
     </style>
     """,
     unsafe_allow_html=True,
@@ -233,13 +232,10 @@ elif user_type == "학생용":
         st.audio("bgm.mp3", format="audio/mp3")
         st.subheader("🎰 세진코인 로또 게임 (1코인 차감)")
         chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
-        # 선택한 번호 출력: 빨간색 배경, 흰색 텍스트, 글자 크기 150%, 배경 제거 클래스 적용
+        # 선택한 번호 출력: 빨간색 배경, 흰색 텍스트, 글자 크기 150%
         if chosen_numbers:
             chosen_str = ", ".join(map(str, chosen_numbers))
-            st.markdown(
-                f"<span class='no-bg' style='background-color:red !important; color:white !important; font-size:150%; padding:4px;'>선택한 번호: {chosen_str}</span>",
-                unsafe_allow_html=True
-            )
+            st.markdown(f"<span style='background-color:red; color:white; font-size:150%; padding:4px;'>선택한 번호: {chosen_str}</span>", unsafe_allow_html=True)
         def start_lotto():
             st.session_state["drawing"] = True
             # 버튼 누르는 즉시 1코인 차감
@@ -269,7 +265,7 @@ elif user_type == "학생용":
                     ball_placeholder.image(main_ball_gif, width=200)
                     time.sleep(3)
                     ball_placeholder.markdown(
-                        f"<span class='no-bg' style='font-size:300%; background-color:red !important; color:white !important;'>{mapping[idx]} 공: {ball}</span> :tada:",
+                        f"<span style='font-size:300%; background-color:red; color:white;'>{mapping[idx]} 공: {ball}</span> :tada:",
                         unsafe_allow_html=True
                     )
                 matches = set(chosen_numbers) & set(main_balls)
@@ -290,7 +286,7 @@ elif user_type == "학생용":
                     time.sleep(3)
                     bonus_ball = random.choice([n for n in pool if n not in main_balls])
                     bonus_placeholder.markdown(
-                        f"<span class='no-bg' style='font-size:300%; background-color:red !important; color:white !important;'>보너스 공: {bonus_ball}</span> :sparkles:",
+                        f"<span style='font-size:300%; background-color:red; color:white;'>보너스 공: {bonus_ball}</span> :sparkles:",
                         unsafe_allow_html=True
                     )
                     remaining_number = list(set(chosen_numbers) - matches)[0]
