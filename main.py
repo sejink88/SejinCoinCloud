@@ -87,7 +87,7 @@ st.markdown(
     """
     <style>
     .stApp {
-        background: url('https://global-assets.benzinga.com/kr/2025/02/16222019/1739712018-Cryptocurrency-Photo-by-SvetlanaParnikov.jpeg') repeat !important;
+        background: url('https://cdn.pixabay.com/photo/2017/12/26/21/43/blockchain-3041480_640.jpg') repeat !important;
         background-size: 150px 150px !important;
     }
     .content-container {
@@ -105,7 +105,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 모든 p, h1~h6, span에 검은색 배경과 패딩 */
+    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -125,12 +125,12 @@ st.markdown(
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* --- 오버라이드: 모드 선택 라디오 버튼의 텍스트 배경 제거 --- */
+    /* 모드 선택 라디오 버튼의 텍스트 배경 제거 */
     .stSidebar .stRadio label {
          background-color: transparent !important;
          padding: 0 !important;
     }
-    /* --- 오버라이드: 멀티셀렉트 옵션(번호 선택) 배경 제거 --- */
+    /* 멀티셀렉트 옵션 배경 제거 */
     div[role="listbox"] * {
          background-color: transparent !important;
     }
