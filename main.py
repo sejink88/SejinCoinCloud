@@ -86,9 +86,9 @@ def render_bgm():
 st.markdown(
     """
     <style>
+    /* 전체 배경: 지정한 이미지로 채우기 */
     .stApp {
-        /* 전체 배경을 지정한 이미지로 채우고, 비율에 맞게 채움 */
-        background: url('https://99bitcoins.com/kr/wp-content/uploads/sites/6/2024/09/featured.jpg') no-repeat center center fixed !important;
+        background: url('https://cdn.pixabay.com/photo/2017/12/26/21/43/blockchain-3041480_640.jpg') no-repeat center center fixed !important;
         background-size: cover !important;
     }
     .content-container {
@@ -106,7 +106,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 기본 텍스트에 검은색 반투명 배경과 패딩 적용 */
+    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -126,11 +126,7 @@ st.markdown(
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* 오버라이드: 사이드바 모드 선택 라디오 버튼 및 멀티셀렉트 옵션의 배경 제거 */
-    .stSidebar .stRadio label, div[data-baseweb="select"] * , div[role="option"] {
-         background-color: transparent !important;
-         padding: 0 !important;
-    }
+    /* (원래 기본 스타일 유지: 사이드바 모드 선택 및 멀티셀렉트 위젯에 기본 배경 적용) */
     </style>
     """,
     unsafe_allow_html=True,
@@ -272,7 +268,7 @@ elif user_type == "학생용":
                         f"<span style='font-size:300%; background-color:red; color:white;'>{mapping[idx]} 공: {ball}</span> :tada:",
                         unsafe_allow_html=True
                     )
-                # 보너스 공 추첨: 딜레이 10초, 보너스 공 추첨 전 gif 3초, 번호 5배 글자 크기, 빨간 배경
+                # 보너스 공 추첨: 딜레이 10초, 보너스 공 추첨 전 gif 3초, 번호 300% 글자 크기, 빨간 배경
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
                 reward = None
