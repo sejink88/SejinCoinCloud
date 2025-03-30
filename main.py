@@ -74,14 +74,25 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# --- BGM 재생: 학생이 비밀번호 입력 시 재생하도록 처리 (토글 제거) ---
+# BGM은 로컬 파일 "bgm.mp3" 사용 (프로젝트 폴더에 bgm.mp3 파일 필요)
+def render_bgm():
+    return """
+    <audio id="bgm" autoplay loop>
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
+    """
+    
 # --- 🌟 UI 스타일 ---
 st.markdown(
     """
     <style>
+    /* 전체 배경: 바둑판식 이미지 */
     .stApp {
         background: url('https://global-assets.benzinga.com/kr/2025/02/16222019/1739712018-Cryptocurrency-Photo-by-SvetlanaParnikov.jpeg') repeat !important;
         background-size: 150px 150px !important;
     }
+    /* 중앙 콘텐츠 영역: 반투명 배경 및 확대된 글씨 */
     .content-container {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 20px;
@@ -90,6 +101,7 @@ st.markdown(
         margin: auto;
         font-size: 1.2em;
     }
+    /* 헤더 이미지 스타일 */
     .header-img {
         width: 100%;
         max-height: 300px;
@@ -97,10 +109,16 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
+    /* 기본 텍스트 및 폰트 설정: 모든 p, h1~h6, span에 반투명 검정 배경 및 패딩 적용 */
+    p, h1, h2, h3, h4, h5, h6, span {
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 4px;
+    }
     html, body, [class*="css"] {
         color: #ffffff;
         font-family: 'Orbitron', sans-serif;
     }
+    /* 버튼 스타일링 */
     .stButton>button {
          background-color: #808080 !important;
          color: #fff;
@@ -214,7 +232,7 @@ elif user_type == "학생용":
     st.markdown(f"<h2>{selected_student}님의 세진코인은 {student_coins:.1f}개입니다.</h2>", unsafe_allow_html=True)
     password = st.text_input("비밀번호를 입력하세요:", type="password")
     if password == str(data.at[student_index, "비밀번호"]):
-        # 학생이 비밀번호를 입력하면 로컬 파일 bgm.mp3 재생 (자동 재생)
+        # 학생이 비밀번호 입력 시 로컬 BGM 재생
         st.audio("bgm.mp3", format="audio/mp3")
         st.subheader("🎰 세진코인 로또 게임 (1코인 차감)")
         chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
