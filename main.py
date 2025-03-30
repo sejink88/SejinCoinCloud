@@ -87,8 +87,8 @@ st.markdown(
     """
     <style>
     .stApp {
-        /* 로컬 파일 bgi2.jpg를 전체 배경으로 채움 */
-        background: url('bgi2.jpg') no-repeat center center fixed !important;
+        /* 배경 이미지를 지정한 링크로 채우기 */
+        background: url('https://i.ibb.co/vCZs9W58/bgi2.jpg') no-repeat center center fixed !important;
         background-size: cover !important;
     }
     .content-container {
@@ -106,7 +106,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 기본 텍스트에 검은색 반투명 배경과 패딩 적용 */
+    /* 기본 텍스트에 검은색 반투명 배경 및 패딩 적용 */
     p, h1, h2, h3, h4, h5, h6, span {
         background-color: rgba(0, 0, 0, 0.7);
         padding: 4px;
@@ -126,7 +126,6 @@ st.markdown(
          transition: transform 0.2s ease-in-out;
          box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* 사이드바 및 멀티셀렉트 기본 배경 복원 */
     </style>
     """,
     unsafe_allow_html=True,
