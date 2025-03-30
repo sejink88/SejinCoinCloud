@@ -17,8 +17,8 @@ def connect_gsheet():
     )
     client = gspread.authorize(creds)
     # 👉 Google Sheets URL 사용
-    sheet_url = st.secrets["general"]["spreadsheet"]  # secrets.toml 파일에서 불러오기
-    sheet = client.open_by_url(sheet_url).sheet1  # 첫 번째 시트 선택
+    sheet_url = st.secrets["general"]["spreadsheet"]
+    sheet = client.open_by_url(sheet_url).sheet1
     return sheet
 
 # 캐시된 데이터를 로드하는 함수
@@ -49,11 +49,10 @@ def load_data():
 def save_data(data):
     sheet = connect_gsheet()
     sheet.update([data.columns.values.tolist()] + data.values.tolist())
-    save_data_to_cache(data)  # 캐시에 저장하여 후속 호출에 대비
+    save_data_to_cache(data)
 
 # 기록을 추가하는 함수 (KST 적용)
 def add_record(student_index, activity, reward=None, additional_info=None):
-    # 대한민국 표준시(KST, UTC+9)를 적용
     kst = timezone(timedelta(hours=9))
     timestamp = datetime.now(kst).strftime("%Y-%m-%d %H:%M:%S")
     record_list = ast.literal_eval(data.at[student_index, "기록"])
@@ -66,22 +65,43 @@ def add_record(student_index, activity, reward=None, additional_info=None):
     record_list.append(new_record)
     data.at[student_index, "기록"] = str(record_list)
 
+# --- BGM 및 효과음 삽입 ---
+# 배경음악 (BGM): 사이트 접속시 자동 재생 (브라우저 정책에 따라 사용자의 상호작용 필요)
+st.markdown(
+    """
+    <audio id="bgm" autoplay loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    """,
+    unsafe_allow_html=True
+)
+# 로또 추첨 효과음 (샘플 효과음)
+st.markdown(
+    """
+    <audio id="drawSound">
+        <source src="https://www.soundjay.com/button/sounds/button-09.mp3" type="audio/mpeg">
+    </audio>
+    """,
+    unsafe_allow_html=True
+)
+
 # --- 🌟 UI 스타일 ---
 st.markdown(
     """
     <style>
-    /* 전체 배경 설정: 바둑판식 이미지 */
+    /* 전체 배경: 바둑판식 이미지 */
     .stApp {
         background: url('https://global-assets.benzinga.com/kr/2025/02/16222019/1739712018-Cryptocurrency-Photo-by-SvetlanaParnikov.jpeg') repeat !important;
         background-size: 150px 150px !important;
     }
-    /* 중앙 콘텐츠 영역 오버레이로 가독성 향상 */
+    /* 중앙 콘텐츠 영역: 반투명 배경 및 확대된 글씨 */
     .content-container {
-        background-color: rgba(0, 0, 0, 0.6);
+        background-color: rgba(0, 0, 0, 0.7);
         padding: 20px;
         border-radius: 10px;
         max-width: 800px;
         margin: auto;
+        font-size: 1.2em;
     }
     /* 헤더 이미지 스타일 */
     .header-img {
@@ -91,7 +111,7 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    /* 텍스트 색상 및 폰트 설정 */
+    /* 텍스트 및 폰트 설정 */
     html, body, [class*="css"] {
         color: #ffffff;
         font-family: 'Orbitron', sans-serif;
@@ -113,7 +133,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 헤더 비트코인 GIF 이미지
+# 헤더 이미지 (GIF)
 st.markdown(
     '<div style="text-align:center;">'
     '<img class="header-img" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExemVldTNsMGVpMjZzdjhzc3hnbzl0d2szYjNoNXY2ZGt4ZXVtNncyciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/30VBSGB7QW1RJpNcHO/giphy.gif" alt="Bitcoin GIF">'
@@ -137,13 +157,13 @@ if "drawing" not in st.session_state:
 # --- 로그 확인 UI ---
 if user_type == "로그 확인":
     st.sidebar.subheader("📜 로그 확인")
-    # 반과 학생 선택 UI (세진코인 부여와 동일)
+    # 반, 학생 선택 UI (세진코인 부여와 동일)
     selected_class_log = st.sidebar.selectbox("반 선택:", data["반"].unique(), key="log_class")
     filtered_data_log = data[data["반"] == selected_class_log]
     selected_student_log = st.sidebar.selectbox("학생 선택:", filtered_data_log["학생"].tolist(), key="log_student")
     student_index_log = data[(data["반"] == selected_class_log) & (data["학생"] == selected_student_log)].index[0]
     
-    # 비밀번호 입력: 관리자 비밀번호 또는 해당 학생의 비밀번호여야 로그 표시
+    # 비밀번호 입력: 관리자 비밀번호 또는 해당 학생의 비밀번호 입력 시 로그 표시
     log_password = st.text_input("비밀번호 입력:", type="password")
     if log_password:
         admin_password = st.secrets["general"]["admin_password"]
@@ -225,39 +245,47 @@ elif user_type == "학생용":
         st.subheader("🎰 세진코인 로또 게임 (1코인 차감)")
         chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
         
-        # 로또 버튼: session_state["drawing"] 값에 따라 비활성화됨
+        # 로또 버튼: session_state["drawing"]에 따라 비활성화
         def start_lotto():
             st.session_state["drawing"] = True
 
         if len(chosen_numbers) == 3 and st.button("로또 게임 시작 (1코인 차감)", key="lotto_button", disabled=st.session_state.get("drawing", False), on_click=start_lotto):
             pass
 
-        # 추첨 로직: 버튼 클릭 후 session_state["drawing"]가 True이면 실행
+        # 추첨 로직: 버튼 클릭 후 session_state["drawing"]가 True일 때 실행
         if st.session_state.get("drawing", False):
             if student_coins < 1:
                 st.error("세진코인이 부족하여 로또를 진행할 수 없습니다.")
                 st.session_state["drawing"] = False
             else:
-                # 10초 사전 카운트다운 동안 버튼은 비활성화됨
+                # 10초 사전 카운트다운 + 재미있는 로딩 GIF 표시
                 countdown_placeholder = st.empty()
+                loading_placeholder = st.empty()
+                loading_image = "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
                 for i in range(10, 0, -1):
                     countdown_placeholder.markdown(f"**로또 추첨까지 {i}초 남음...**")
+                    loading_placeholder.image(loading_image, width=200)
                     time.sleep(1)
                 countdown_placeholder.empty()
+                loading_placeholder.empty()
 
                 # 1코인 차감
                 data.at[student_index, "세진코인"] -= 1
                 pool = list(range(1, 21))
                 main_balls = random.sample(pool, 3)
                 
-                # 메인 공 3개를 3초 간격으로 순차적으로 표시
+                # 메인 공 3개를 3초 간격으로 순차적으로 표시 (효과음 및 로또 공 이미지 포함)
                 for idx, ball in enumerate(main_balls, start=1):
                     ball_placeholder = st.empty()
                     for j in range(3, 0, -1):
                         ball_placeholder.markdown(f"**{idx}번째 공 추첨 중... {j}초 남음**")
                         time.sleep(1)
-                    ball_placeholder.markdown(f"**{idx}번째 공: {ball}** :tada:")
-
+                    # 효과음 재생
+                    st.markdown("<script>document.getElementById('drawSound').play();</script>", unsafe_allow_html=True)
+                    # 로또 공 이미지를 표시 (샘플 이미지)
+                    ball_image = f"https://via.placeholder.com/100?text={ball}"
+                    ball_placeholder.image(ball_image, width=100, caption=f"{idx}번째 공: {ball}")
+                
                 # 당첨 여부 확인 (메인 공과 학생 선택 번호 비교)
                 matches = set(chosen_numbers) & set(main_balls)
                 match_count = len(matches)
