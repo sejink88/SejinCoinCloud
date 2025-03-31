@@ -54,7 +54,13 @@ def save_data(data):
 def add_record(student_index, activity, reward=None, additional_info=None):
     kst = timezone(timedelta(hours=9))
     timestamp = datetime.now(kst).strftime("%Y-%m-%d %H:%M:%S")
-    record_list = ast.literal_eval(data.at[student_index, "기록"])
+    # 기존 기록이 비어있거나 올바른 리스트가 아닐 경우 대비
+    try:
+        record_list = ast.literal_eval(data.at[student_index, "기록"])
+        if not isinstance(record_list, list):
+            record_list = []
+    except:
+        record_list = []
     new_record = {
         "timestamp": timestamp,
         "activity": activity,
@@ -308,14 +314,15 @@ elif user_type == "학생용":
             main_balls = random.sample(pool, 3)
             main_ball_gif = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExazYzZXp0azhvdjF1M3BtM3JobjVic2Y3ZWIyaTh4ZXpkNDNwdDZtdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dvgefaMHmaN2g/giphy.gif"
             mapping = {1: "첫번째", 2: "두번째", 3: "세번째"}
+            ball_placeholder = st.empty()  # 단일 placeholder 사용
             for idx, ball in enumerate(main_balls, start=1):
-                ball_placeholder = st.empty()
                 ball_placeholder.image(main_ball_gif, width=200)
                 time.sleep(3)
                 ball_placeholder.markdown(
                     f"<span style='font-size:300%; background-color:red; color:white;'>{mapping[idx]} 공: {ball}</span> :tada:",
                     unsafe_allow_html=True
                 )
+            # 당첨 여부 및 보너스 처리
             matches = set(chosen_numbers) & set(main_balls)
             match_count = len(matches)
             reward = None
