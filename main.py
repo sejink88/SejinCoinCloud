@@ -179,6 +179,7 @@ if user_type == "교사용":
     student_index = data[(data["반"] == selected_class) & (data["학생"] == selected_student)].index[0]
     password = st.text_input("관리자 비밀번호를 입력하세요:", type="password")
     if password == st.secrets["general"]["admin_password"]:
+        # 개별 학생 코인 부여/차감
         coin_amount = st.number_input("부여 또는 회수할 코인 수:", min_value=-100, max_value=100, value=1)
         if st.button("세진코인 변경하기"):
             if coin_amount != 0:
@@ -201,6 +202,34 @@ if user_type == "교사용":
             add_record(student_index, "세진코인 초기화", reward=None, additional_info="세진코인 및 기록 초기화")
             save_data(data)
             st.error(f"{selected_student}의 세진코인이 초기화되었습니다.")
+        
+        # ★ 학급 전체 일괄 작업 기능 ★
+        st.markdown("---")
+        st.subheader("학급 전체 일괄 작업")
+        batch_coin_amount = st.number_input("전체 학급에 부여/차감할 코인 수:", min_value=-100, max_value=100, value=1, key="batch_coin")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("전체 일괄 부여/차감", key="batch_change"):
+                if batch_coin_amount != 0:
+                    class_indices = data[data["반"] == selected_class].index
+                    for idx in class_indices:
+                        data.at[idx, "세진코인"] += batch_coin_amount
+                        add_record(idx, "학급 전체 세진코인 변경", reward=None, additional_info=f"일괄 변경된 코인: {batch_coin_amount}")
+                    save_data(data)
+                    if batch_coin_amount > 0:
+                        st.success(f"{selected_class} 전체 학생에게 세진코인 {batch_coin_amount}개 부여 완료!")
+                    else:
+                        st.warning(f"{selected_class} 전체 학생에게서 세진코인 {-batch_coin_amount}개 회수 완료!")
+        with col2:
+            if st.button("전체 세진코인 초기화", key="batch_reset"):
+                class_indices = data[data["반"] == selected_class].index
+                for idx in class_indices:
+                    data.at[idx, "세진코인"] = 0
+                    data.at[idx, "기록"] = "[]"
+                    add_record(idx, "학급 전체 세진코인 초기화", reward=None, additional_info="일괄 초기화")
+                save_data(data)
+                st.error(f"{selected_class} 전체 학생의 세진코인 초기화 완료!")
+        
         updated_student_data = data.loc[[student_index]].drop(columns=["비밀번호"])
         st.subheader(f"{selected_student}의 업데이트된 세진코인")
         st.dataframe(updated_student_data)
