@@ -78,13 +78,9 @@ def save_lotto_entries(entries):
     with open("lotto_entries.pkl", "wb") as f:
         pickle.dump(entries, f)
 
-# --- BGM 재생: 학생 비밀번호 입력 시 재생 (로컬 파일 "bgm.mp3") ---
+# --- BGM 재생 함수 (동일 파일 사용) ---
 def render_bgm():
-    return """
-    <audio id="bgm" autoplay loop>
-        <source src="bgm.mp3" type="audio/mp3">
-    </audio>
-    """
+    return st.audio("bgm.mp3", format="audio/mp3")
 
 # --- 🌟 UI 스타일 ---
 st.markdown(
@@ -128,7 +124,6 @@ st.markdown(
         transition: transform 0.2s ease-in-out;
         box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
-    /* 버튼 안 글씨 배경 제거 스타일 추가 */
     .stButton button span {
         background-color: transparent !important;
         padding: 0 !important;
@@ -146,12 +141,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 st.markdown('<h1 style="text-align:center; font-size:3em; color:yellow; background-color:rgba(0,0,0,0.7); padding:10px; border-radius:10px;">$$세진코인$$</h1>', unsafe_allow_html=True)
-
 st.markdown('<div class="content-container">', unsafe_allow_html=True)
 
 # --- 🎓 UI 선택 ---
 user_type = st.sidebar.radio("모드를 선택하세요", ["학생용", "교사용", "통계용", "로그 확인"])
-
 data = load_data()
 
 # --- 로그 확인 UI ---
@@ -189,8 +182,13 @@ if user_type == "교사용":
     selected_student = st.selectbox("학생을 선택하세요:", filtered_data["학생"].tolist())
     student_index = data[(data["반"] == selected_class) & (data["학생"] == selected_student)].index[0]
     password = st.text_input("관리자 비밀번호를 입력하세요:", type="password")
+    
+    # 관리자 비밀번호가 입력된 경우에만 기능 제공
     if password == st.secrets["general"]["admin_password"]:
-        # 개별 학생 코인 부여/차감
+        # 교사용 BGM 재생
+        render_bgm()
+        
+        # 개별 학생 코인 부여/차감 및 비밀번호 변경
         coin_amount = st.number_input("부여 또는 회수할 코인 수:", min_value=-100, max_value=100, value=1)
         if st.button("세진코인 변경하기"):
             if coin_amount != 0:
@@ -244,95 +242,91 @@ if user_type == "교사용":
         updated_student_data = data.loc[[student_index]].drop(columns=["비밀번호"])
         st.subheader(f"{selected_student}의 업데이트된 세진코인")
         st.dataframe(updated_student_data)
-    student_coins = float(data.at[student_index, "세진코인"])
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("📌 학생 정보")
-    st.sidebar.write(f"**이름:** {selected_student}")
-    st.sidebar.write(f"**보유 코인:** {student_coins:.1f}개")
-    st.sidebar.markdown("---")
-    
-    # ★ 반 단위 로또 추첨 기능 (교사용 기능에 추가) ★
-    st.markdown("---")
-    st.subheader("반 단위 로또 추첨")
-    if st.button("해당 반 로또 추첨 진행"):
-        entries = load_lotto_entries()
-        class_name = selected_class
-        if class_name not in entries or len(entries[class_name]) == 0:
-            st.warning("해당 반에 구매한 로또 티켓이 없습니다.")
-        else:
-            tickets = entries[class_name]
-            st.info(f"{len(tickets)}개의 로또 티켓이 있습니다. 추첨을 진행합니다.")
-            # 학생용과 동일한 로또 추첨 딜레이 및 이미지 적용
-            countdown_placeholder = st.empty()
-            loading_image = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjNmaDVzbTlrYWJrMXZzMGZkam5tOWc5OHQ5eDBhYm94OWxzN2hnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/APqEbxBsVlkWSuFpth/giphy.gif"
-            for i in range(7, 0, -1):
-                countdown_placeholder.markdown(f"**로또 추첨까지 {i}초 남음...**")
-                countdown_placeholder.image(loading_image, width=200)
-                time.sleep(1)
-            countdown_placeholder.empty()
-            pool = list(range(1, 21))
-            main_balls = random.sample(pool, 3)
-            main_ball_gif = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExazYzZXp0azhvdjF1M3BtM3JobjVic2Y3ZWIyaTh4ZXpkNDNwdDZtdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dvgefaMHmaN2g/giphy.gif"
-            mapping = {1: "첫번째", 2: "두번째", 3: "세번째"}
-            for idx, ball in enumerate(main_balls, start=1):
-                ball_placeholder = st.empty()
-                ball_placeholder.image(main_ball_gif, width=200)
-                time.sleep(3)
-                ball_placeholder.markdown(
-                    f"<span style='font-size:300%; background-color:red; color:white;'>{mapping[idx]} 공: {ball}</span> :tada:",
-                    unsafe_allow_html=True
-                )
-            # 보너스 공 추첨 (티켓 중 2개 일치가 있을 경우)
-            bonus_needed = any(len(set(ticket["chosen_numbers"]) & set(main_balls)) == 2 for ticket in tickets)
-            bonus_ball = None
-            if bonus_needed:
-                bonus_placeholder = st.empty()
-                for k in range(10, 0, -1):
-                    bonus_placeholder.markdown(f"**보너스 공 추첨까지 {k}초 남음...**")
-                    time.sleep(1)
-                bonus_placeholder.empty()
-                bonus_placeholder = st.empty()
-                bonus_placeholder.image(main_ball_gif, width=200)
-                time.sleep(3)
-                bonus_ball = random.choice([n for n in pool if n not in main_balls])
-                bonus_placeholder.markdown(
-                    f"<span style='font-size:300%; background-color:red; color:white;'>보너스 공: {bonus_ball}</span> :sparkles:",
-                    unsafe_allow_html=True
-                )
-            winners = []
-            for ticket in tickets:
-                ticket_numbers = ticket["chosen_numbers"]
-                student_idx = ticket["student_index"]
-                match_count = len(set(ticket_numbers) & set(main_balls))
-                reward = None
-                if match_count == 3:
-                    reward = "치킨"
-                elif match_count == 2:
-                    remaining_number = list(set(ticket_numbers) - set(main_balls))[0]
-                    if bonus_ball is not None and remaining_number == bonus_ball:
-                        reward = "햄버거세트"
-                    else:
-                        reward = "매점이용권"
-                elif match_count == 1:
-                    reward = "0.5코인"
-                    data.at[student_idx, "세진코인"] += 0.5
-                if reward:
-                    add_record(student_idx, "로또 당첨", reward, f"당첨 번호: {main_balls}, 선택 번호: {ticket_numbers}")
-                    winners.append({
-                        "학생": ticket["학생"],
-                        "당첨 보상": reward,
-                        "선택 번호": ticket_numbers,
-                        "당첨 번호": main_balls
-                    })
-            save_data(data)
-            # 해당 반의 로또 티켓 초기화
-            entries[class_name] = []
-            save_lotto_entries(entries)
-            if winners:
-                st.success("로또 당첨 결과:")
-                st.table(pd.DataFrame(winners))
+        
+        # ★ 반 단위 로또 추첨 기능 (관리자 비밀번호 확인 후 활성화) ★
+        st.markdown("---")
+        st.subheader("반 단위 로또 추첨")
+        if st.button("해당 반 로또 추첨 진행"):
+            entries = load_lotto_entries()
+            class_name = selected_class
+            if class_name not in entries or len(entries[class_name]) == 0:
+                st.warning("해당 반에 구매한 로또 티켓이 없습니다.")
             else:
-                st.info("아쉽게도 당첨된 티켓이 없습니다.")
+                tickets = entries[class_name]
+                st.info(f"{len(tickets)}개의 로또 티켓이 있습니다. 추첨을 진행합니다.")
+                # 학생용과 동일한 로또 추첨 딜레이 및 이미지 적용
+                countdown_placeholder = st.empty()
+                loading_image = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjNmaDVzbTlrYWJrMXZzMGZkam5tOWc5OHQ5eDBhYm94OWxzN2hnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/APqEbxBsVlkWSuFpth/giphy.gif"
+                for i in range(7, 0, -1):
+                    countdown_placeholder.markdown(f"**로또 추첨까지 {i}초 남음...**")
+                    countdown_placeholder.image(loading_image, width=200)
+                    time.sleep(1)
+                countdown_placeholder.empty()
+                pool = list(range(1, 21))
+                main_balls = random.sample(pool, 3)
+                main_ball_gif = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExazYzZXp0azhvdjF1M3BtM3JobjVic2Y3ZWIyaTh4ZXpkNDNwdDZtdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dvgefaMHmaN2g/giphy.gif"
+                mapping = {1: "첫번째", 2: "두번째", 3: "세번째"}
+                for idx, ball in enumerate(main_balls, start=1):
+                    ball_placeholder = st.empty()
+                    ball_placeholder.image(main_ball_gif, width=200)
+                    time.sleep(3)
+                    ball_placeholder.markdown(
+                        f"<span style='font-size:300%; background-color:red; color:white;'>{mapping[idx]} 공: {ball}</span> :tada:",
+                        unsafe_allow_html=True
+                    )
+                # 보너스 공 추첨 (티켓 중 2개 일치가 있을 경우)
+                bonus_needed = any(len(set(ticket["chosen_numbers"]) & set(main_balls)) == 2 for ticket in tickets)
+                bonus_ball = None
+                if bonus_needed:
+                    bonus_placeholder = st.empty()
+                    for k in range(10, 0, -1):
+                        bonus_placeholder.markdown(f"**보너스 공 추첨까지 {k}초 남음...**")
+                        time.sleep(1)
+                    bonus_placeholder.empty()
+                    bonus_placeholder = st.empty()
+                    bonus_placeholder.image(main_ball_gif, width=200)
+                    time.sleep(3)
+                    bonus_ball = random.choice([n for n in pool if n not in main_balls])
+                    bonus_placeholder.markdown(
+                        f"<span style='font-size:300%; background-color:red; color:white;'>보너스 공: {bonus_ball}</span> :sparkles:",
+                        unsafe_allow_html=True
+                    )
+                winners = []
+                for ticket in tickets:
+                    ticket_numbers = ticket["chosen_numbers"]
+                    student_idx = ticket["student_index"]
+                    match_count = len(set(ticket_numbers) & set(main_balls))
+                    reward = None
+                    if match_count == 3:
+                        reward = "치킨"
+                    elif match_count == 2:
+                        remaining_number = list(set(ticket_numbers) - set(main_balls))[0]
+                        if bonus_ball is not None and remaining_number == bonus_ball:
+                            reward = "햄버거세트"
+                        else:
+                            reward = "매점이용권"
+                    elif match_count == 1:
+                        reward = "0.5코인"
+                        data.at[student_idx, "세진코인"] += 0.5
+                    if reward:
+                        add_record(student_idx, "로또 당첨", reward, f"당첨 번호: {main_balls}, 선택 번호: {ticket_numbers}")
+                        winners.append({
+                            "학생": ticket["학생"],
+                            "당첨 보상": reward,
+                            "선택 번호": ticket_numbers,
+                            "당첨 번호": main_balls
+                        })
+                save_data(data)
+                # 해당 반의 로또 티켓 초기화
+                entries[class_name] = []
+                save_lotto_entries(entries)
+                if winners:
+                    st.success("로또 당첨 결과:")
+                    st.table(pd.DataFrame(winners))
+                else:
+                    st.info("아쉽게도 당첨된 티켓이 없습니다.")
+    else:
+        st.error("관리자 비밀번호를 입력하세요.")
 
 # --- 학생용 UI ---
 elif user_type == "학생용":
@@ -351,7 +345,7 @@ elif user_type == "학생용":
     password = st.text_input("비밀번호를 입력하세요:", type="password")
     if password == str(data.at[student_index, "비밀번호"]):
         # 학생이 비밀번호 입력 시 로컬 BGM 재생
-        st.audio("bgm.mp3", format="audio/mp3")
+        render_bgm()
         st.markdown(
             "<h2 style='background-color: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 8px;'>"
             "🎟 로또 티켓 구매 (1코인 차감)"
