@@ -162,7 +162,6 @@ if user_type == "교사용":
     password = st.text_input("관리자 비밀번호를 입력하세요:", type="password")
     if password == st.secrets["general"]["admin_password"]:
         render_bgm()  # 관리자 BGM 재생
-        # 개별 학생 코인 부여/차감 및 비밀번호 변경
         coin_amount = st.number_input("부여 또는 회수할 코인 수:", min_value=-100, max_value=100, value=1)
         if st.button("세진코인 변경하기"):
             if coin_amount != 0:
@@ -185,8 +184,6 @@ if user_type == "교사용":
             add_record(student_index, "세진코인 초기화", reward=None, additional_info="세진코인 및 기록 초기화")
             save_data(data)
             st.error(f"{selected_student}의 세진코인이 초기화되었습니다!")
-
-        # 학급 전체 일괄 작업
         st.markdown("---")
         st.subheader("학급 전체 일괄 작업")
         batch_coin_amount = st.number_input("전체 학급에 부여/차감할 코인 수:", min_value=-100, max_value=100, value=1, key="batch_coin")
@@ -211,8 +208,6 @@ if user_type == "교사용":
                     add_record(idx, "학급 전체 세진코인 초기화", reward=None, additional_info="일괄 초기화")
                 save_data(data)
                 st.error(f"{selected_class} 전체 학생의 세진코인 초기화 완료!")
-        
-        # 반 단위 로또 추첨 (관리자 전용)
         st.markdown("---")
         st.subheader("반 단위 로또 추첨")
         if st.button("해당 반 로또 추첨 진행"):
@@ -319,7 +314,6 @@ elif user_type == "학생용":
             "</h2>",
             unsafe_allow_html=True
         )
-        # 공 모양의 버튼 인터페이스
         if "chosen_numbers" not in st.session_state:
             st.session_state["chosen_numbers"] = []
         st.markdown("**공을 클릭하여 숫자를 선택하세요 (최대 3개):**")
@@ -394,18 +388,22 @@ elif user_type == "로그 확인":
         student_password = str(data.at[student_index_log, "비밀번호"])
         if log_password == admin_password or log_password == student_password:
             st.subheader(f"{selected_student_log}님의 활동 로그")
-            logs = ast.literal_eval(data.at[student_index_log, "기록"])
-            for log in logs:
-                timestamp = log["timestamp"]
-                activity = log["activity"]
-                reward = log.get("reward", "")
-                additional_info = log.get("additional_info", "")
-                log_text = f"🕒 {timestamp} - {activity}"
-                if reward:
-                    log_text += f" (보상: {reward})"
-                if additional_info:
-                    log_text += f" [{additional_info}]"
-                st.write(log_text)
+            try:
+                logs = ast.literal_eval(data.at[student_index_log, "기록"])
+            except Exception as e:
+                st.error(f"로그 데이터를 파싱하는 중 오류 발생: {e}")
+            else:
+                for log in logs:
+                    timestamp = log.get("timestamp", "")
+                    activity = log.get("activity", "")
+                    reward = log.get("reward", "")
+                    additional_info = log.get("additional_info", "")
+                    log_text = f"🕒 {timestamp} - {activity}"
+                    if reward:
+                        log_text += f" (보상: {reward})"
+                    if additional_info:
+                        log_text += f" [{additional_info}]"
+                    st.write(log_text)
         else:
             st.error("올바른 비밀번호를 입력하세요.")
 
