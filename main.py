@@ -227,7 +227,7 @@ if user_type == "교사용":
                 st.write("정말 추첨하시겠습니까?")
                 col_yes, col_no = st.columns(2)
                 if col_yes.button("예, 추첨 진행"):
-                    # 로또 추첨 진행 (학생용과 동일한 딜레이 및 이미지 적용)
+                    # 로또 추첨 진행 (동일한 딜레이 및 이미지 적용)
                     countdown_placeholder = st.empty()
                     loading_image = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjNmaDVzbTlrYWJrMXZzMGZkam5tOWc5OHQ5eDBhYm94OWxzN2hnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/APqEbxBsVlkWSuFpth/giphy.gif"
                     for i in range(7, 0, -1):
@@ -299,7 +299,6 @@ if user_type == "교사용":
                     st.session_state["admin_confirm_draw"] = False
                 if col_no.button("취소"):
                     st.session_state["admin_confirm_draw"] = False
-    # 관리자 비밀번호가 틀린 경우
     else:
         st.error("올바른 관리자 비밀번호를 입력하세요.")
 
@@ -402,6 +401,7 @@ elif user_type == "로그 확인":
         student_password = str(data.at[student_index_log, "비밀번호"])
         if log_password == admin_password or log_password == student_password:
             st.subheader(f"{selected_student_log}님의 활동 로그")
+            st.write(f"현재 보유 코인: {data.at[student_index_log, '세진코인']}개")
             try:
                 logs = ast.literal_eval(data.at[student_index_log, "기록"])
             except Exception as e:
@@ -428,14 +428,10 @@ elif user_type == "통계용":
     st.header("통계용 모드")
     st.subheader("📊 로또 당첨 통계")
     reward_stats = {"치킨": 0, "햄버거세트": 0, "매점이용권": 0, "0.5코인": 0}
-
-    # "기록" 열이 문자열이고 "로또"가 포함된 행만 필터링
     winners_df = data[data["기록"].apply(lambda x: isinstance(x, str) and "로또" in x)]
-    
     if winners_df.empty:
         st.info("아직 로또 당첨 기록이 없습니다.")
     else:
-        # 당첨 횟수 계산
         for index, row in winners_df.iterrows():
             try:
                 records = ast.literal_eval(row["기록"])
@@ -446,11 +442,8 @@ elif user_type == "통계용":
                 reward = record.get("reward")
                 if reward in reward_stats:
                     reward_stats[reward] += 1
-        
         st.write("전체 당첨 횟수:")
         st.write(reward_stats)
-        
-        # 3등 이상 당첨자 목록 (치킨, 햄버거세트, 매점이용권 당첨)
         winners_list = []
         for index, row in winners_df.iterrows():
             try:
@@ -464,13 +457,11 @@ elif user_type == "통계용":
                         "당첨 보상": record.get("reward", ""),
                         "당첨 날짜": record.get("timestamp", "")
                     })
-        
         if winners_list:
             st.write("3등 이상 당첨자 목록:")
             st.table(pd.DataFrame(winners_list))
         else:
             st.info("3등 이상 당첨 기록이 없습니다.")
-        
         st.write("로또 당첨 분석이 완료되었습니다.")
 
 st.markdown('</div>', unsafe_allow_html=True)
