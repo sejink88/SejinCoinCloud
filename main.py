@@ -407,4 +407,56 @@ elif user_type == "로그 확인":
         else:
             st.error("올바른 비밀번호를 입력하세요.")
 
+# ================================
+# 통계용 모드
+# ================================
+elif user_type == "통계용":
+    st.header("통계용 모드")
+    st.subheader("📊 로또 당첨 통계")
+    reward_stats = {"치킨": 0, "햄버거세트": 0, "매점이용권": 0, "0.5코인": 0}
+
+    # "기록" 열이 문자열이고 "로또"가 포함된 행만 필터링
+    winners_df = data[data["기록"].apply(lambda x: isinstance(x, str) and "로또" in x)]
+    
+    if winners_df.empty:
+        st.info("아직 로또 당첨 기록이 없습니다.")
+    else:
+        # 당첨 횟수 계산
+        for index, row in winners_df.iterrows():
+            try:
+                records = ast.literal_eval(row["기록"])
+            except Exception as e:
+                st.error(f"{row['학생']}님의 기록 파싱 중 오류 발생: {e}")
+                continue
+            for record in records:
+                reward = record.get("reward")
+                if reward in reward_stats:
+                    reward_stats[reward] += 1
+        
+        st.write("전체 당첨 횟수:")
+        st.write(reward_stats)
+        
+        # 3등 이상 당첨자 목록 (치킨, 햄버거세트, 매점이용권 당첨)
+        winners_list = []
+        for index, row in winners_df.iterrows():
+            try:
+                records = ast.literal_eval(row["기록"])
+            except Exception:
+                continue
+            for record in records:
+                if record.get("reward") in ["치킨", "햄버거세트", "매점이용권"]:
+                    winners_list.append({
+                        "학생": row["학생"],
+                        "당첨 보상": record.get("reward", ""),
+                        "당첨 날짜": record.get("timestamp", "")
+                    })
+        
+        if winners_list:
+            st.write("3등 이상 당첨자 목록:")
+            st.table(pd.DataFrame(winners_list))
+        else:
+            st.info("3등 이상 당첨 기록이 없습니다.")
+        
+        st.write("로또 당첨 분석이 완료되었습니다.")
+
 st.markdown('</div>', unsafe_allow_html=True)
