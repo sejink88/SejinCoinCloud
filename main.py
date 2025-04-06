@@ -365,9 +365,13 @@ elif user_type == "학생용":
                 f"<span style='background-color:red; color:white; font-size:150%; padding:4px;'>선택한 번호: {', '.join(map(str, chosen_numbers))}</span>",
                 unsafe_allow_html=True
             )
+        # 구매 후 재구매 방지를 위해 세션 상태 변수 사용
+        if "lotto_ticket_purchased" not in st.session_state:
+            st.session_state["lotto_ticket_purchased"] = False
         # 티켓 구매 버튼 (선택한 번호가 3개일 때만 가능)
         if len(chosen_numbers) == 3:
-            if st.button("로또 티켓 구매"):
+            if st.button("로또 티켓 구매", disabled=st.session_state["lotto_ticket_purchased"]):
+                st.session_state["lotto_ticket_purchased"] = True
                 current_coins = float(data.at[student_index, "세진코인"])
                 if current_coins < 1:
                     st.error("세진코인이 부족하여 티켓 구매가 불가능합니다.")
