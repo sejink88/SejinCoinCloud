@@ -359,35 +359,41 @@ elif user_type == "학생용":
                 f"<span style='background-color:red; color:white; font-size:150%; padding:4px;'>선택한 번호: {', '.join(map(str, chosen_numbers))}</span>",
                 unsafe_allow_html=True
             )
-        # 구매 후 재구매 방지를 위해 세션 상태 변수 사용
-        if "lotto_ticket_purchased" not in st.session_state:
-            st.session_state["lotto_ticket_purchased"] = False
         # 티켓 구매 버튼 (선택한 번호가 3개일 때만 가능)
         if len(chosen_numbers) == 3:
-            if st.button("로또 티켓 구매", disabled=st.session_state["lotto_ticket_purchased"]):
-                st.session_state["lotto_ticket_purchased"] = True
-                current_coins = float(data.at[student_index, "세진코인"])
-                if current_coins < 1:
-                    st.error("세진코인이 부족하여 티켓 구매가 불가능합니다.")
+            if st.button("로또 티켓 구매"):
+                # 현재 구매하려는 티켓과 동일한 번호 조합으로 이미 구매한 티켓이 있는지 확인
+                entries = load_lotto_entries()
+                class_name = selected_class
+                duplicate_ticket = False
+                if class_name in entries:
+                    for ticket in entries[class_name]:
+                        if ticket["student_index"] == student_index and sorted(ticket["chosen_numbers"]) == sorted(chosen_numbers):
+                            duplicate_ticket = True
+                            break
+                if duplicate_ticket:
+                    st.error("동일한 번호로는 한 회차에 한 개만 구매 가능합니다.")
                 else:
-                    data.at[student_index, "세진코인"] = current_coins - 1
-                    save_data(data)
-                    # 로또 티켓 정보 저장 (반 별로 관리)
-                    entries = load_lotto_entries()
-                    class_name = selected_class
-                    if class_name not in entries:
-                        entries[class_name] = []
-                    ticket = {
-                        "student_index": student_index,
-                        "학생": selected_student,
-                        "chosen_numbers": chosen_numbers,
-                        "timestamp": datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M:%S")
-                    }
-                    entries[class_name].append(ticket)
-                    save_lotto_entries(entries)
-                    add_record(student_index, "로또 티켓 구매", reward=None, additional_info=f"선택 번호: {chosen_numbers}")
-                    save_data(data)
-                    st.success("티켓 구매 완료! 추첨은 관리자가 진행합니다.")
+                    current_coins = float(data.at[student_index, "세진코인"])
+                    if current_coins < 1:
+                        st.error("세진코인이 부족하여 티켓 구매가 불가능합니다.")
+                    else:
+                        data.at[student_index, "세진코인"] = current_coins - 1
+                        save_data(data)
+                        # 로또 티켓 정보 저장 (반 별로 관리)
+                        if class_name not in entries:
+                            entries[class_name] = []
+                        ticket = {
+                            "student_index": student_index,
+                            "학생": selected_student,
+                            "chosen_numbers": chosen_numbers,
+                            "timestamp": datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M:%S")
+                        }
+                        entries[class_name].append(ticket)
+                        save_lotto_entries(entries)
+                        add_record(student_index, "로또 티켓 구매", reward=None, additional_info=f"선택 번호: {chosen_numbers}")
+                        save_data(data)
+                        st.success("티켓 구매 완료! 추첨은 관리자가 진행합니다.")
         else:
             st.info("로또 티켓 구매를 위해 1부터 20까지의 숫자 중 3개를 선택하세요.")
         student_coins = float(data.at[student_index, "세진코인"])
