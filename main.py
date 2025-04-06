@@ -268,7 +268,9 @@ elif user_type == "학생용":
             "<h2 style='background-color: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 8px;'>🎰 세진코인 로또 게임 (1코인 차감)</h2>",
             unsafe_allow_html=True
         )
-        chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:", list(range(1, 21)))
+        options = ['1', '2', '3' ,'4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']
+        chosen_numbers = st.multiselect("1부터 20까지 숫자 중 **3개**를 선택하세요:",  list(range(1, 21)), disabled=st.session_state.drawing)
+        
         # 선택한 번호 출력: 빨간색 배경, 흰색 텍스트, 글자 크기 150%
         if chosen_numbers:
             chosen_str = ", ".join(map(str, chosen_numbers))
@@ -297,6 +299,7 @@ elif user_type == "학생용":
 
         if st.session_state.get("drawing", False):
             # 초기 딜레이: 7초, 새 로딩 GIF 사용
+            
             countdown_placeholder = st.empty()
             loading_image = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjNmaDVzbTlrYWJrMXZzMGZkam5tOWc5OHQ5eDBhYm94OWxzN2hnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/APqEbxBsVlkWSuFpth/giphy.gif"
             for i in range(7, 0, -1):
