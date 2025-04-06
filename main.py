@@ -210,7 +210,7 @@ if user_type == "교사용":
                 st.error(f"{selected_class} 전체 학생의 세진코인 초기화 완료!")
         st.markdown("---")
         st.subheader("반 단위 로또 추첨")
-        # 관리자가 추첨 버튼을 누르면 세션 상태에 표시하여 구매 내역 확인 및 최종 확인을 진행
+        # 관리자 추첨 전에 구매 티켓 내역을 보여주고 확인하는 단계
         if st.button("해당 반 로또 추첨 진행"):
             st.session_state["admin_confirm_draw"] = True
         
@@ -374,7 +374,8 @@ elif user_type == "학생용":
                         }
                         entries[class_name].append(ticket)
                         save_lotto_entries(entries)
-                        add_record(student_index, "로또 티켓 구매", reward=None, additional_info=f"선택 번호: {st.session_state['chosen_numbers']}")
+                        new_coin_count = data.at[student_index, "세진코인"]
+                        add_record(student_index, "로또 티켓 구매", reward=None, additional_info=f"선택 번호: {st.session_state['chosen_numbers']}, 현재 보유 코인: {new_coin_count}개")
                         save_data(data)
                         st.success("티켓 구매 완료! 추첨은 관리자가 진행합니다.")
         else:
